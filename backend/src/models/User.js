@@ -19,6 +19,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    phone: {
+        type: String,
+        required: false
+    },
+    address: {
+        street: { type: String, required: false },
+        city: { type: String, required: false }
+    },
+    preference:{
+        type: String,
+        required: false,
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date
 });

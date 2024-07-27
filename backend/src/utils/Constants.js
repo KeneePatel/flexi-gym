@@ -8,6 +8,9 @@ module.exports = {
     REGISTRATIONFAILED : "Registration Failed",
     STATUSNOTFOUND : 400,
     STATUSNOTAUTHORIZED : 401,
+    USERNOTPERMITTED : 403,
+    NOTFOUND : 404,
+    NOTAUTHORIZEDMSG : "Not authorized",
     INTERNALERRORSTATUS : 500,
     STATUSOK: 200,
     STATUSCREATED : 201,
@@ -21,4 +24,5 @@ module.exports = {
     EMAILBODY : "Please click on the below link to proceed with completing your password reset process for Flexi-Gym Portal. \n\n ",
     RESETEMAILSENT : "Password reset link sent successfully on your email address.",
     RESETEMAILERROR: "Error occurred while sending password reset email.",
+    REMOVEUSERCOLUMNPASSWORD : "-password",
 };

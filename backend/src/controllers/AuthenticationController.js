@@ -1,8 +1,8 @@
 const User = require('../models/User');
-const CustomError = require('../utils/ErrorMessage');
 const authService = require('../services/authService');
 const crypto = require("crypto");
 const Constants = require('../utils/Constants');
+const CustomError = require('../utils/ErrorMessage');
 
 //Async method which handles user registration
 exports.userRegistration = async (req, res, next) => {
