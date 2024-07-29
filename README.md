@@ -29,24 +29,24 @@
 
 ### Landing Page:
 
--Designed and implemented a visually appealing landing page for Gym Portal.
--Utilized Tailwind CSS for responsive layout and styling.
--Included sections such as About, Amenities, Membership, Navigation bar, and Footer.
--Incorporated images, buttons, and text to create an engaging user experience.
+- Designed and implemented a visually appealing landing page for Gym Portal.
+- Utilized Tailwind CSS for responsive layout and styling.
+- Included sections such as About, Amenities, Membership, Navigation bar, and Footer.
+- Incorporated images, buttons, and text to create an engaging user experience.
 
 ### FAQ Page:
 
--Created a FAQ page to address common questions and provide helpful information to users.
--Designed an intuitive interface for browsing through frequently asked questions.
--Included dynamic content generation for questions and answers.
--Used Next.js for server-side rendering to optimize page loading speed.
+- Created a FAQ page to address common questions and provide helpful information to users.
+- Designed an intuitive interface for browsing through frequently asked questions.
+- Included dynamic content generation for questions and answers.
+- Used Next.js for server-side rendering to optimize page loading speed.
 
 ### Contact Page
 
--Developed a Contact page to facilitate direct communication between users and gym owners.
--Included a form for users to submit inquiries, questions, or feedback.
--Implemented validation for form inputs to ensure data integrity and security.
--Integrated Material-UI components for form elements and styling.
+- Developed a Contact page to facilitate direct communication between users and gym owners.
+- Included a form for users to submit inquiries, questions, or feedback.
+- Implemented validation for form inputs to ensure data integrity and security.
+- Integrated Material-UI components for form elements and styling.
 
 ## Prototype URL:
 
