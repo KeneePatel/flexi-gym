@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDB } from '../config/db';
+import { getDB } from '../config/database';
 import { count } from 'console';
 
 const router = Router();
@@ -19,7 +19,7 @@ router.get('/:id', async (req, res) => {
       res.json(total.length);
 
       
-    } catch (err) {
+    } catch (err: any) {
       res.status(500).json({ message: err.message });
     }
   });
