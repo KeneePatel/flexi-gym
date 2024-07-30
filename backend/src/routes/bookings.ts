@@ -45,6 +45,8 @@ const initializeCollections = () => {
     gymsCollection = database.collection<Gym>('gyms');
 };
 
+
+
 router.get('/user/:userId', async (req: Request, res: Response, next: NextFunction) => {
     initializeCollections();
 

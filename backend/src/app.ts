@@ -28,17 +28,22 @@ app.use(
 );
 app.use(helmet());
 app.use(express.json());
-app.use(express.static("public"));
-app.set("view engine", "ejs");
 
-connectDB();
+// Connect to database
+// connectDB();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+// Dependency injection
+const stripeService = new StripeService(process.env.STRIPE_SECRET_KEY!);
+const bookingRepository = new BookingRepository();
+const paymentController = new PaymentController(
+  stripeService,
+  bookingRepository,
+);
 
-app.use('/gyms', gymRouter);
-app.use(cors());
+// Routes (to be added later)
+app.use("/api/bookings", bookingsRouter);
+app.use('/api/gyms', gymRouter);
+app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
