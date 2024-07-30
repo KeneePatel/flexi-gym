@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { MongoClient, ObjectId, Db, Collection } from 'mongodb';
 import dotenv from 'dotenv';
+import { log } from 'console';
 
 dotenv.config();
 
@@ -83,6 +84,7 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
             items: bookingsWithGymDetails,
         });
     } catch (error) {
+        console.log(`error caught in bookings: ${error}`);
         next(error);
     }
 });
