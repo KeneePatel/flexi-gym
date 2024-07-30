@@ -1,4 +1,9 @@
 'use client';
+import Footer from "@/components/footer/footer";
+import NavBar from "@/components/navbar/navbar";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Roboto as FontSans } from "next/font/google";
 import "./globals.css";
@@ -34,6 +39,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Toaster />
           <NavBar />
           {children}
           <Footer />
