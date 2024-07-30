@@ -1,4 +1,5 @@
 "use client"
+import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Line } from "react-chartjs-2";
@@ -30,28 +31,48 @@ interface DashboardData {
   monthlyBookings: number[];
 }
 
-const dummyData: DashboardData = {
-  totalBookings: 120,
-  totalEarnings: 5400,
-  newBookings: [
-    { id: 1, customer: "John Doe", session: "Yoga", date: "2024-06-01", time: "09:00" },
-    { id: 2, customer: "Jane Smith", session: "Pilates", date: "2024-06-01", time: "10:00" },
-  ],
-  popularClasses: [
-    { id: 1, name: "Yoga", count: 40 },
-    { id: 2, name: "Pilates", count: 30 },
-  ],
-  monthlyEarnings: [500, 700, 1200, 900, 1300, 1100, 950, 1050, 1150, 1250, 1300, 1400],
-  monthlyBookings: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65],
-};
-
 const Dashboard = () => {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [bookings, setBookings] = useState("");
+  const [earnings, setEarnings] = useState("");
+  const [users, setUsers] = useState([]);
+
+
+
+  useEffect(() => {
+    fetch("http://localhost:5000/dashboard")
+      .then((response) => response.json())
+      .then((data) => setData(data))
+      .catch((error) => console.error("Error fetching dashboard data:", error));
+
+      fetch("http://localhost:5000/totalBookings/66a829393eaadabf6d01393b")
+      .then((response) => response.json())
+      .then((data) => setBookings(data))
+      .catch((error) => console.error("Error fetching dashboard data:", error));
+
+      fetch("http://localhost:5000/totalEarnings/66a829393eaadabf6d01393b")
+      .then((response) => response.json())
+      .then((data) => setEarnings(data))
+      .catch((error) => console.error("Error fetching dashboard data:", error));
+
+      fetch("http://localhost:5000/totalBookedUsers/66a829393eaadabf6d01393b")
+      .then((response) => response.json())
+      .then((data) => setUsers(data.users))
+      .catch((error) => console.error("Error fetching dashboard data:", error));
+
+      
+  }, []);
+
+  if (!data || !bookings) {
+    return <div>Loading...</div>;
+  }
+
   const earningsChartData = {
     labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     datasets: [
       {
         label: "Monthly Earnings",
-        data: dummyData.monthlyEarnings,
+        data: data.monthlyEarnings,
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -64,7 +85,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "Monthly Bookings",
-        data: dummyData.monthlyBookings,
+        data: data.monthlyBookings,
         borderColor: "rgba(153, 102, 255, 1)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
         fill: true,
@@ -86,6 +107,7 @@ const Dashboard = () => {
     },
   };
 
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <header className="text-center mb-8">
@@ -99,7 +121,7 @@ const Dashboard = () => {
             <CardTitle>Total Bookings</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-semibold">{dummyData.totalBookings}</p>
+            <p className="text-4xl font-semibold">{bookings}</p>
           </CardContent>
         </Card>
 
@@ -108,36 +130,36 @@ const Dashboard = () => {
             <CardTitle>Total Earnings</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-semibold">${dummyData.totalEarnings}</p>
+            <p className="text-4xl font-semibold">${earnings}</p>
           </CardContent>
         </Card>
 
-        <Card className="w-full">
+         <Card className="w-full">
           <CardHeader>
             <CardTitle>New Bookings</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {dummyData.newBookings.map((booking) => (
-              <div key={booking.id} className="mb-4">
-                <p className="text-lg font-medium">{booking.customer} - {booking.session}</p>
-                <p className="text-gray-600">{booking.date} at {booking.time}</p>
+          <CardContent className="space-y-4 ">
+            {users.map((user) => (
+              <div key={user._id} className="mb-4">
+                <p className="text-md ">{user.fullName} - {user.email}</p>
+                {/* <p className="text-gray-600">{booking.date} at {booking.time}</p> */}
               </div>
             ))}
           </CardContent>
         </Card>
 
-        <Card className="w-full">
+        {/*<Card className="w-full">
           <CardHeader>
             <CardTitle>Popular Classes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {dummyData.popularClasses.map((cls) => (
+            {data.popularClasses.map((cls) => (
               <div key={cls.id} className="mb-4">
                 <p className="text-lg font-medium">{cls.name} - {cls.count} bookings</p>
               </div>
             ))}
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <Tabs defaultValue="earnings" className="w-full">
