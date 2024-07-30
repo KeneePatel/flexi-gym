@@ -13,7 +13,7 @@ import ProfileAvatar from "./profile-avatar";
 import { LogoutConfirmationDialogLink } from "../logout/logout-confirmation-dialog-link";
 import { AuthContext } from '@/Auth/AuthContext';
 import {useContext, useEffect, useState} from "react";
-import {getAccessToken} from "@/Auth/AuthService";
+import {getProfileData} from "@/Auth/AuthService";
 import {jwtDecode} from "jwt-decode";
 import {getGymInitials, getInitialsFromUser} from "@/lib/utils";
 
@@ -28,15 +28,14 @@ interface DecodedToken {
 export function ProfileDropdown() {
   const context = useContext(AuthContext);
   const [profileData, setProfileData] = useState<DecodedToken | null>(null);
-  const token = getAccessToken();
+  const userProfile = getProfileData();
 
   useEffect(() => {
 
-    if (token) {
+    if (userProfile) {
       try {
-        const decoded = jwtDecode(token);
         // @ts-ignore
-        setProfileData(decoded);
+        setProfileData(userProfile);
       } catch (error) {
         console.error('Token decoding failed:', error);
       }

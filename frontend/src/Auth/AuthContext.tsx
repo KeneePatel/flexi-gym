@@ -28,7 +28,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const authenticate = (token: string) => {
         setAccessToken(token);
         try {
-            const decodedToken: any = jwtDecode(token);
             setToken(token);
             setIsAuthenticated(true);
         } catch (error) {

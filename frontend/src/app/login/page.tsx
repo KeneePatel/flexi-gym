@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from 'axios';
 import React, { useState, ChangeEvent, FormEvent,useContext } from 'react';
-import {setAccessToken,login,register} from '@/Auth/AuthService';
 import { AuthContext } from '@/Auth/AuthContext';
 import {useRouter} from "next/navigation";
 import {LOGIN_URL, REGISTRATION_URL} from "@/Constants/EndPoints";

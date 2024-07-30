@@ -12,15 +12,19 @@ const ProtectedRoute = ({ children }: ProtectRouteProps) => {
     const context = useContext(AuthContext);
 
     // @ts-ignore
-    const { isAuthenticated } = context;
+    const { isAuthenticated, setIsAuthenticated } = context;
 
     const router = useRouter();
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
             router.push("/login");
+        } else {
+            setIsAuthenticated(true);
         }
-    }, [isAuthenticated, router]);
+    }, [router]);
 
     if (!isAuthenticated) {
         return null;
