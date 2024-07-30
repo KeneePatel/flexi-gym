@@ -95,6 +95,7 @@ export default function Component() {
             setTotalPrice(gymDetails.price);
         }
     }
+
     const handleDelete = async () => {
         try {
             if (bookingId) {
@@ -111,6 +112,19 @@ export default function Component() {
             setDialogOpen(false);
         }
     }
+
+    const handleCheckout = () => {
+        console.log("gymId", gymId);
+        const query = new URLSearchParams({
+            gymId: gymId,
+            startDate: startDate?.toISOString() || '',
+            endDate: endDate?.toISOString() || '',
+            charges: totalPrice.toString()
+        }).toString();
+    
+        router.push(`/checkout?${query}`);
+    }
+
     if (loading) {
         return (<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-2 gap-8">
@@ -269,7 +283,7 @@ export default function Component() {
                     {
                         bookingId &&
                         bookingId === 'new' &&
-                        <Button size="lg" className="w-full" disabled={isButtonDisabled}>
+                        <Button size="lg" className="w-full" disabled={isButtonDisabled} onClick={handleCheckout}>
                             Proceed to checkout
                         </Button>
                     }
