@@ -1,39 +1,32 @@
-// Add the "use client" directive at the top
 'use client';
 
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Define a TypeScript interface for the booking data
 interface Booking {
-  _id: string;
+  startDate: string;
+  endDate: string;
+  charges: number | string; // Updated to allow for string values
   gymName: string;
-  location: string;
-  date: string;
-  amount: string;
-  status: string;
+  gymLocation: string;
 }
 
 export default function Component() {
-  // State to store bookings
-  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
+  const [currentBookings, setCurrentBookings] = useState<Booking[]>([]);
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
 
-  // Fetch bookings from backend
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        // Update the URL to include the port number
-        const response = await fetch('http://localhost:5001/api/bookings');
-        const data: Booking[] = await response.json(); // Specify the type of the data
+        const response = await fetch('http://localhost:8080/api/bookings/user/66a8129ffa48505c5ed80597');
+        const data = await response.json();
 
-        // Split bookings into upcoming and past
         const now = new Date();
-        const upcoming = data.filter(booking => new Date(booking.date) > now);
-        const past = data.filter(booking => new Date(booking.date) <= now);
+        const current = data.items.filter((booking: Booking) => new Date(booking.endDate) > now);
+        const past = data.items.filter((booking: Booking) => new Date(booking.endDate) <= now);
 
-        setUpcomingBookings(upcoming);
+        setCurrentBookings(current);
         setPastBookings(past);
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -41,22 +34,36 @@ export default function Component() {
     };
 
     fetchBookings();
-  }, []); // Empty dependency array means this runs once when the component mounts
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const formatCharges = (charges: number | string) => {
+    if (typeof charges === 'number') {
+      return `$${charges.toFixed(2)}`;
+    }
+    return `$${charges}`;
+  };
 
   return (
     <div className="container mx-auto px-6 py-8 sm:px-8 lg:px-10">
       <h1 className="text-2xl font-bold mb-6">Booking History</h1>
       <div className="grid gap-8">
         <div>
-          <h2 className="text-xl font-bold mb-4">Upcoming Bookings</h2>
+          <h2 className="text-xl font-bold mb-4">Current Bookings</h2>
           <div className="grid gap-6">
-            {upcomingBookings.map((booking) => (
-              <Card key={booking._id} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
+            {currentBookings.map((booking, index) => (
+              <Card key={index} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
                 <div className="grid gap-2">
                   <h3 className="text-lg font-semibold">{booking.gymName}</h3>
-                  <p className="text-muted-foreground">{booking.location}</p>
-                  <p className="text-muted-foreground">{booking.date}</p>
-                  <p className="font-medium">{booking.amount}</p>
+                  <p className="text-muted-foreground">{booking.gymLocation}</p>
+                  <p className="text-muted-foreground">
+                    {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
+                  </p>
+                  <p className="font-medium">{formatCharges(booking.charges)}</p>
                 </div>
                 <div className="flex items-center justify-end">
                   <Button variant="outline" size="sm">
@@ -70,13 +77,15 @@ export default function Component() {
         <div>
           <h2 className="text-xl font-bold mb-4">Past Bookings</h2>
           <div className="grid gap-6">
-            {pastBookings.map((booking) => (
-              <Card key={booking._id} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
+            {pastBookings.map((booking, index) => (
+              <Card key={index} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
                 <div className="grid gap-2">
                   <h3 className="text-lg font-semibold">{booking.gymName}</h3>
-                  <p className="text-muted-foreground">{booking.location}</p>
-                  <p className="text-muted-foreground">{booking.date}</p>
-                  <p className="font-medium">{booking.amount}</p>
+                  <p className="text-muted-foreground">{booking.gymLocation}</p>
+                  <p className="text-muted-foreground">
+                    {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
+                  </p>
+                  <p className="font-medium">{formatCharges(booking.charges)}</p>
                 </div>
                 <div className="flex items-center justify-end">
                   <Button variant="outline" size="sm">

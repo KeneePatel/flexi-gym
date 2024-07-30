@@ -11,8 +11,8 @@ const client = new MongoClient(uri);
 
 interface Booking {
     _id: ObjectId;
-    userId: ObjectId;
-    gymId: ObjectId;
+    userId: string;
+    gymId: string;
     startDate: Date;
     endDate: Date;
     charges: number;
@@ -32,7 +32,7 @@ let gymsCollection: Collection<Gym>;
 (async () => {
     try {
         await client.connect();
-        database = client.db('flexigym');
+        database = client.db('FlexiGym');
         bookingsCollection = database.collection<Booking>('bookings');
         gymsCollection = database.collection<Gym>('gyms');
         console.log('Connected to MongoDB');
@@ -48,6 +48,7 @@ const validateObjectId = (id: string): boolean => {
 
 router.get('/user/:userId', async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;
+    console.log("userId", userId)
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
@@ -59,14 +60,18 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
         const skip = (page - 1) * limit;
 
         const bookings = await bookingsCollection
-            .find({ userId: new ObjectId(userId) })
+            .find({ userId: userId })
             .skip(skip)
             .limit(limit)
             .toArray();
+        console.log("bookings", bookings);
 
         const bookingsWithGymDetails = await Promise.all(
             bookings.map(async (booking) => {
-                const gym = await gymsCollection.findOne({ _id: booking.gymId });
+                const gym = await gymsCollection.findOne({ _id: new ObjectId(booking.gymId) });
+                console.log("gym", gym);
+                console.log("booking", booking);
+
                 return {
                     startDate: booking.startDate,
                     endDate: booking.endDate,
@@ -79,7 +84,7 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
 
         res.json({
             currentPage: page,
-            totalItems: await bookingsCollection.countDocuments({ userId: new ObjectId(userId) }),
+            // totalItems: await bookingsCollection.countDocuments({ userId: userId }),
             items: bookingsWithGymDetails,
         });
     } catch (error) {
@@ -94,3 +99,4 @@ router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 export default router;
+  
