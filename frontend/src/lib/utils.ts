@@ -17,14 +17,8 @@ export function getNameFromFirstAndLastName(
   return `${firstName} ${lastName}`;
 }
 
-export function getInitialsFromUser(user: { firstName: string; lastName: string }) {
+export function getInitialsFromUser(user: UserType) {
   return getInitialsFromFirstAndLastName(user.firstName, user.lastName);
-}
-
-export function getGymInitials(gymName: string): string {
-  const words = gymName.split(' ');
-  const initials = words.map(word => word.charAt(0).toUpperCase());
-  return initials.join('');
 }
 
 export function getInitialsFromFirstAndLastName(
