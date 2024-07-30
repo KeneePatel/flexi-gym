@@ -11,8 +11,46 @@ import {
 import { CalendarIcon, CreditCardIcon, UserIcon } from "lucide-react";
 import ProfileAvatar from "./profile-avatar";
 import { LogoutConfirmationDialogLink } from "../logout/logout-confirmation-dialog-link";
+import { AuthContext } from '@/Auth/AuthContext';
+import {useContext, useEffect, useState} from "react";
+import {getProfileData} from "@/Auth/AuthService";
+import {jwtDecode} from "jwt-decode";
+import {getGymInitials, getInitialsFromUser} from "@/lib/utils";
+
+
+interface DecodedToken {
+  firstName?: string;
+  lastName?: string;
+  gymName?: string;
+  type?: string;
+}
 
 export function ProfileDropdown() {
+  const context = useContext(AuthContext);
+  const [profileData, setProfileData] = useState<DecodedToken | null>(null);
+  const userProfile = getProfileData();
+
+  useEffect(() => {
+
+    if (userProfile) {
+      try {
+        // @ts-ignore
+        setProfileData(userProfile);
+      } catch (error) {
+        console.error('Token decoding failed:', error);
+      }
+    }
+  }, []);
+
+  const displayFallback = profileData?.type === 'gym'
+      ? getGymInitials(profileData.gymName || 'Gym')
+      : getInitialsFromUser({
+        firstName: profileData?.firstName || '',
+        lastName: profileData?.lastName || ''
+      });
+  const fullName = profileData?.type === 'gym' ? profileData.gymName : `${profileData?.firstName || ''} ${profileData?.lastName || ''}`;
+  // @ts-ignore
+  const { logout } = context;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -21,12 +59,12 @@ export function ProfileDropdown() {
           size="icon"
           className="rounded-full hover:ring-primary hover:ring-2"
         >
-          <ProfileAvatar />
+          <ProfileAvatar display={displayFallback} name={fullName} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="font-medium">
-          Kenee Patel
+          {fullName}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
@@ -53,7 +91,7 @@ export function ProfileDropdown() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <LogoutConfirmationDialogLink />
+          <LogoutConfirmationDialogLink/>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
