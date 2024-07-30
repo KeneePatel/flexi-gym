@@ -1,8 +1,11 @@
-import cors from "cors";
-import dotenv from "dotenv";
-import express from "express";
-import helmet from "helmet";
-import connectDB from "./config/database";
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import {connectDB} from './config/database';
+
+
+import gymRouter from './routes/gyms';
 
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
@@ -10,6 +13,8 @@ import bookingsRouter from "./routes/bookings";
 import { StripeService } from "./services/StripeService";
 
 dotenv.config();
+connectDB();
+
 
 const app = express();
 
@@ -25,7 +30,7 @@ app.use(helmet());
 app.use(express.json());
 
 // Connect to database
-connectDB();
+// connectDB();
 
 // Dependency injection
 const stripeService = new StripeService(process.env.STRIPE_SECRET_KEY!);
@@ -37,6 +42,7 @@ const paymentController = new PaymentController(
 
 // Routes (to be added later)
 app.use("/api/bookings", bookingsRouter);
+// app.use('/api/gyms', gymRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 
 const PORT = process.env.PORT || 8080;
