@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Line } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
@@ -22,6 +22,12 @@ interface PopularClass {
   count: number;
 }
 
+interface User {
+  _id: string;
+  fullName: string;
+  email: string;
+}
+
 interface DashboardData {
   totalBookings: number;
   totalEarnings: number;
@@ -33,37 +39,38 @@ interface DashboardData {
 
 const Dashboard = () => {
   const [data, setData] = useState<DashboardData | null>(null);
-  const [bookings, setBookings] = useState("");
-  const [earnings, setEarnings] = useState("");
-  const [users, setUsers] = useState([]);
-
-
+  const [bookings, setBookings] = useState<number>(0);
+  const [earnings, setEarnings] = useState<number>(0);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/dashboard")
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching dashboard data:", error));
+    const fetchData = async () => {
+      try {
+        const [dashboardRes, bookingsRes, earningsRes, usersRes] = await Promise.all([
+          fetch("http://localhost:5000/dashboard"),
+          fetch("http://localhost:5000/totalBookings/66a576c7d989398aea3ba6af"),
+          fetch("http://localhost:5000/totalEarnings/66a576c7d989398aea3ba6af"),
+          fetch("http://localhost:5000/totalBookedUsers/66a576c7d989398aea3ba6af")
+        ]);
 
-      fetch("http://localhost:5000/totalBookings/66a829393eaadabf6d01393b")
-      .then((response) => response.json())
-      .then((data) => setBookings(data))
-      .catch((error) => console.error("Error fetching dashboard data:", error));
+        const dashboardData = await dashboardRes.json();
+        const bookingsData = await bookingsRes.json();
+        const earningsData = await earningsRes.json();
+        const usersData = await usersRes.json();
 
-      fetch("http://localhost:5000/totalEarnings/66a829393eaadabf6d01393b")
-      .then((response) => response.json())
-      .then((data) => setEarnings(data))
-      .catch((error) => console.error("Error fetching dashboard data:", error));
+        setData(dashboardData);
+        setBookings(bookingsData);
+        setEarnings(earningsData);
+        setUsers(usersData.users);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
 
-      fetch("http://localhost:5000/totalBookedUsers/66a829393eaadabf6d01393b")
-      .then((response) => response.json())
-      .then((data) => setUsers(data.users))
-      .catch((error) => console.error("Error fetching dashboard data:", error));
-
-      
+    fetchData();
   }, []);
 
-  if (!data || !bookings) {
+  if (!data) {
     return <div>Loading...</div>;
   }
 
@@ -107,12 +114,11 @@ const Dashboard = () => {
     },
   };
 
-
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-primary-foreground p-6">
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">Gym Owner Dashboard</h1>
-        <h2 className="text-2xl mt-2 text-gray-600">Overview</h2>
+        <h1 className="text-4xl font-bold text-secondary-foreground">Gym Owner Dashboard</h1>
+        <h2 className="text-2xl mt-2 text-secondary-foreground">Overview</h2>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
@@ -134,32 +140,18 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-         <Card className="w-full">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>New Bookings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 ">
             {users.map((user) => (
-              <div key={user._id} className="mb-4">
+              <div key={user._id} className="mb-4 hover:bg-secondary p-2 rounded-lg">
                 <p className="text-md ">{user.fullName} - {user.email}</p>
-                {/* <p className="text-gray-600">{booking.date} at {booking.time}</p> */}
               </div>
             ))}
           </CardContent>
         </Card>
-
-        {/*<Card className="w-full">
-          <CardHeader>
-            <CardTitle>Popular Classes</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {data.popularClasses.map((cls) => (
-              <div key={cls.id} className="mb-4">
-                <p className="text-lg font-medium">{cls.name} - {cls.count} bookings</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card> */}
       </div>
 
       <Tabs defaultValue="earnings" className="w-full">
@@ -190,10 +182,6 @@ const Dashboard = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
-      <div className="text-center">
-        <Button className="w-full">View More Details</Button>
-      </div>
     </div>
   );
 };
