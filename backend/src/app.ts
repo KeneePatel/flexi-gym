@@ -1,28 +1,27 @@
 import express from 'express';
-import { connectDB } from '../config/db';
-import gymRoutes from '../routes/gyms';
-import reviewRoutes from '../routes/reviews';
-import bookingRoutes from '../routes/bookings'; 
 import cors from 'cors';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import connectDB from './config/database';
+
+dotenv.config();
 
 const app = express();
-const port = 5000;
 
+// Middleware
+app.use(cors());
+app.use(helmet());
 app.use(express.json());
-app.use(express.static("public"));
-app.set("view engine", "ejs");
 
+// Connect to database
 connectDB();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+// Routes (to be added later)
+
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-app.use('/gyms', gymRoutes);
-app.use('/reviews', reviewRoutes);
-app.use('/bookings', bookingRoutes); 
-app.use(cors());
-
-app.listen(port, () => {
-  return console.log(`http://localhost:${port}`);
-});
+export default app;
