@@ -15,7 +15,7 @@ import {useRouter} from "next/navigation";
 import {FORGOT_URL, LOGIN_URL} from "@/Constants/EndPoints";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {setAccessToken} from "@/api/AuthService";
+import {setAccessToken} from "@/Auth/AuthService";
 
 export default function LoginPage() {
     const router = useRouter();

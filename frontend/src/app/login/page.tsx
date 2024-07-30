@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  CardFooter
 } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
@@ -13,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from 'axios';
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import {setAccessToken,login,register} from '../../api/AuthService';
+import React, { useState, ChangeEvent, FormEvent,useContext } from 'react';
+import {setAccessToken,login,register} from '@/Auth/AuthService';
+import { AuthContext } from '@/Auth/AuthContext';
 import {useRouter} from "next/navigation";
 import {LOGIN_URL, REGISTRATION_URL} from "@/Constants/EndPoints";
 import { toast, ToastContainer } from 'react-toastify';
@@ -24,7 +24,8 @@ export default function LoginPage() {
   const router = useRouter();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const strongPasswordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
-
+  // @ts-ignore
+  const { authenticate } = useContext(AuthContext);
 
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -71,13 +72,13 @@ export default function LoginPage() {
           autoClose: 2000,
           position: "bottom-right"
         });
-        setAccessToken(response.data.token);
+        authenticate(response.data.token);
+        router.push('/profile');
         setLoginFormValidation('');
       } else {
         setLoginFormValidation(response.data.message);
       }
     } catch (error) {
-      console.log(error);
       // @ts-ignore
       if (error.response && error.response.data && error.response.data.error) {
         // @ts-ignore

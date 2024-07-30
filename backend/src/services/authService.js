@@ -18,6 +18,10 @@ function generateJWTToken(user) {
     const payload = {
         id: user._id,
         email: user.email,
+        firstName: user.firstName || 'F',
+        lastName: user.lastName || 'L',
+        gymName: user.gymName || 'GM',
+        type: user.type
     };
     return  jwt.sign(payload, JWTSecret, { expiresIn: '8h' });
 }

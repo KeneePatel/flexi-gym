@@ -38,7 +38,7 @@ exports.userLogin = async (request, response, next) => {
                 return response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, error: Constants.INVALIDPASSWORD });
             }
         }
-        response.status(Constants.STATUSOK).json({ success: true, token: authService.generateJWTToken(user._id) });
+        response.status(Constants.STATUSOK).json({ success: true, token: authService.generateJWTToken(user) });
     } catch (error) {
         console.log(error.message);
         next(new CustomError(Constants.LOGINFAILED, error.message, 500));

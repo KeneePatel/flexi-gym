@@ -1,3 +1,4 @@
+'use client';
 import type { Metadata } from "next";
 import { Roboto as FontSans } from "next/font/google";
 import "./globals.css";
@@ -5,6 +6,7 @@ import { cn } from "@/lib/utils";
 import NavBar from "@/components/navbar/navbar";
 import Footer from "@/components/footer/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from '@/Auth/AuthContext';
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -12,17 +14,13 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  title: "FlexiGym",
-  description: "Made for power, glory, and banana",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
+      <AuthProvider>
     <html lang="en">
       <body
         className={cn(
@@ -42,5 +40,6 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
+      </AuthProvider>
   );
 }
