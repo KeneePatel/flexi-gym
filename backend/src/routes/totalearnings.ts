@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { getDB } from '../config/database';
-import { count } from 'console';
 
 const router = Router();
 

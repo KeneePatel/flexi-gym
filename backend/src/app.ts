@@ -11,6 +11,9 @@ import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
 import bookingsRouter from "./routes/bookings";
 import { StripeService } from "./services/StripeService";
+import monthlyBookings from "./routes/monthlybookings";
+import monthlyEarnings from "./routes/monthlyearnings";
+
 
 dotenv.config();
 connectDB();
@@ -42,6 +45,12 @@ const paymentController = new PaymentController(
 
 // Routes (to be added later)
 app.use("/api/bookings", bookingsRouter);
+app.use("/totalBookings", totalBookings);
+app.use("/totalEarnings", totalEarnings);
+app.use("/totalBookedUsers", totalBookedUsers);
+app.use("/monthlyEarnings", monthlyEarnings);
+app.use("/monthlyBookings", monthlyBookings);
+
 app.use('/api/gyms', gymRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 

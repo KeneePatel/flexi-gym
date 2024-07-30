@@ -28,40 +28,37 @@ interface User {
   email: string;
 }
 
-interface DashboardData {
-  totalBookings: number;
-  totalEarnings: number;
-  newBookings: Booking[];
-  popularClasses: PopularClass[];
-  monthlyEarnings: number[];
-  monthlyBookings: number[];
-}
+
 
 const Dashboard = () => {
-  const [data, setData] = useState<DashboardData | null>(null);
   const [bookings, setBookings] = useState<number>(0);
+  const [monthlyBookings, setMonthlyBookings] = useState([]);
+  const [monthlyEarnings, setMonthlyEarnings] = useState([]);
   const [earnings, setEarnings] = useState<number>(0);
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dashboardRes, bookingsRes, earningsRes, usersRes] = await Promise.all([
-          fetch("http://localhost:5000/dashboard"),
-          fetch("http://localhost:5000/totalBookings/66a576c7d989398aea3ba6af"),
-          fetch("http://localhost:5000/totalEarnings/66a576c7d989398aea3ba6af"),
-          fetch("http://localhost:5000/totalBookedUsers/66a576c7d989398aea3ba6af")
+        const [bookingsRes, earningsRes, usersRes, monthEarnRes, monthBookRes] = await Promise.all([
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookings/66a576c7d989398aea3ba6af"),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalEarnings/66a576c7d989398aea3ba6af"),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookedUsers/66a576c7d989398aea3ba6af"),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyEarnings/66a576c7d989398aea3ba6af"),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyBookings/66a576c7d989398aea3ba6af")
         ]);
 
-        const dashboardData = await dashboardRes.json();
         const bookingsData = await bookingsRes.json();
         const earningsData = await earningsRes.json();
         const usersData = await usersRes.json();
+        const monthlyEarningData = await monthEarnRes.json();
+        const monthlyBookData = await monthBookRes.json();
 
-        setData(dashboardData);
         setBookings(bookingsData);
         setEarnings(earningsData);
         setUsers(usersData.users);
+        setMonthlyBookings(monthlyBookData);
+        setMonthlyEarnings(monthlyEarningData);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       }
@@ -70,16 +67,19 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (!data) {
+  if (!bookings) {
     return <div>Loading...</div>;
   }
+
+  console.log(monthlyBookings);
+  console.log(monthlyEarnings);
 
   const earningsChartData = {
     labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     datasets: [
       {
         label: "Monthly Earnings",
-        data: data.monthlyEarnings,
+        data: monthlyEarnings,
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -92,7 +92,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "Monthly Bookings",
-        data: data.monthlyBookings,
+        data: monthlyBookings,
         borderColor: "rgba(153, 102, 255, 1)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
         fill: true,
