@@ -35,6 +35,7 @@ const UserProfileSchema = new mongoose.Schema({
         street: { type: String, required: false },
         city: { type: String, required: false },
         province: { type: String, required: false },
+        country: {type: String, required: false },
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date

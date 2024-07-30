@@ -6,6 +6,9 @@ const Constants = require('./utils/Constants');
 const mongodb = require('./config/DatabaseConnection');
 const authRoute = require('./routes/AuthRoute');
 const profileRoute = require('./routes/ProfileRoute');
+const cors = require('cors');
+
+server.use(cors());
 
 const SERVERPORT = process.env.PORT || 4000;
 try{

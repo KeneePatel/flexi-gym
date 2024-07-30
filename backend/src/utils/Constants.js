@@ -1,7 +1,7 @@
 module.exports = {
     BASEROUTEMSG : "Server has been started successfully",
-    EMAILEXISTS : "User Profile with this email already exists.",
-    EMAILNOTEXISTS: "User Profile with entered email address is not registered.",
+    EMAILEXISTS : "Profile with this email already exists.",
+    EMAILNOTEXISTS: "Profile with entered email address is not registered.",
     INVALIDPASSWORD: "Invalid Password",
     INVALIDJWTTOKEN : "Invalid Token",
     LOGINFAILED: "Login Failed",
@@ -22,7 +22,7 @@ module.exports = {
     SECONDS: 60,
     MILLISECONDS: 1000,
     EMAILSUBJECT: "Flexi-Gym Portal Password reset token",
-    EMAILBODY : "Please click on the below link to proceed with completing your password reset process for Flexi-Gym Portal. \n\n ",
+    EMAILBODY : "Use the below password reset token to set a new password. \n\n ",
     RESETEMAILSENT : "Password reset link sent successfully on your email address.",
     RESETEMAILERROR: "Error occurred while sending password reset email.",
     REMOVEUSERCOLUMNPASSWORD : "-password",

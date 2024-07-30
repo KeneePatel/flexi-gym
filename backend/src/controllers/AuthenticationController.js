@@ -47,7 +47,7 @@ exports.userLogin = async (request, response, next) => {
 
 //Reset Password method that is used to set new password by using the reset token send on user's email address.
 exports.resetPassword = async (request, response) => {
-    const resetPasswordToken = crypto.createHash(Constants.HASHALGO).update(request.params.passwordResetToken).digest(Constants.HASHENCODING);
+    const resetPasswordToken = crypto.createHash(Constants.HASHALGO).update(request.body.passwordResetToken).digest(Constants.HASHENCODING);
     try {
         const user = await Profile.findOne({
             resetPasswordToken,
@@ -84,9 +84,9 @@ exports.forgotPassword = async (request, response) => {
 
         await user.save();
 
-        const resetUrl = `${request.protocol}://${request.get('host')}/api/auth/resetpassword/${resetToken}`;
+        const resetUrl = `${resetToken}`;
 
-        const message = Constants.EMAILBODY + `${resetUrl}`;
+        const message = Constants.EMAILBODY + "Password Reset Token : "+`${resetUrl}`;
         await authService.sendEmail({ email: user.email, subject: Constants.EMAILSUBJECT, message });
 
         response.status(Constants.STATUSOK).json({ success: true, message: Constants.RESETEMAILSENT });

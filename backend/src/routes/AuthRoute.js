@@ -5,7 +5,7 @@ const router = express.Router();
 //Routes mainly responsible for User Authentication
 router.post('/login', userLogin);
 router.post('/register', userRegistration);
-router.put('/resetpassword/:passwordResetToken', resetPassword);
+router.put('/resetpassword', resetPassword);
 router.post('/forgotpassword', forgotPassword);
 
 
