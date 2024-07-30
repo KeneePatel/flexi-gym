@@ -5,9 +5,9 @@ const bodyParser = require('body-parser');
 const Constants = require('./utils/Constants');
 const mongodb = require('./config/DatabaseConnection');
 const authRoute = require('./routes/AuthRoute');
-const userRoute = require('./routes/UserRoute');
+const profileRoute = require('./routes/ProfileRoute');
 
-const SERVERPORT = process.env.PORT || 5000;
+const SERVERPORT = process.env.PORT || 4000;
 try{
     mongodb();
 }
@@ -18,7 +18,7 @@ catch(e){
 server.use(bodyParser.json());
 
 server.use('/api/auth', authRoute);
-server.use('/api/user', userRoute);
+server.use('/profile', profileRoute);
 
 server.get('/', (req, res) => {
     res.send(Constants.BASEROUTEMSG);

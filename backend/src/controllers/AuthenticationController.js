@@ -1,43 +1,44 @@
-const User = require('../models/User');
+const Profile = require('../models/Profile');
 const authService = require('../services/authService');
 const crypto = require("crypto");
 const Constants = require('../utils/Constants');
 const CustomError = require('../utils/ErrorMessage');
 
 //Async method which handles user registration
-exports.userRegistration = async (req, res, next) => {
-    const { email, fullName, password, type } = req.body;
+exports.userRegistration = async (request, response, next) => {
+    const { email, firstName, lastName, gymName, password, type } = request.body;
     try {
-        const existingUser = await User.findOne({ email: email });
-        if (existingUser) {
-            return res.status(Constants.STATUSNOTFOUND).send({ error: Constants.EMAILEXISTS });
+        const existingProfile = await Profile.findOne({ email: email });
+        if (existingProfile) {
+            return response.status(Constants.STATUSNOTFOUND).send({ error: Constants.EMAILEXISTS });
         }
         else{
             const hashedPassword = await authService.getHashedPassword(password);
-            const user = await User.create({ email, fullName, password: hashedPassword, type });
+            const user = await Profile.create({ email, firstName, lastName, gymName, password: hashedPassword, type });
             const JWT = authService.generateJWTToken(user);
-            res.status(Constants.STATUSCREATED).json({ success: true, JWT });
+            response.status(Constants.STATUSCREATED).json({ success: true, JWT });
         }
     } catch (error) {
+        console.log(error.message);
         next(new CustomError(Constants.REGISTRATIONFAILED, error.message, 500));
     }
 };
 
 //Async method which handles user login using JWT
-exports.userLogin = async (req, res, next) => {
-    const { email, password } = req.body;
+exports.userLogin = async (request, response, next) => {
+    const { email, password } = request.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await Profile.findOne({ email });
         if(!user){
-            return res.status(Constants.STATUSNOTFOUND).json({ success: false, error: Constants.EMAILNOTEXISTS });
+            return response.status(Constants.STATUSNOTFOUND).json({ success: false, error: Constants.EMAILNOTEXISTS });
         }
         else{
             const match = await authService.matchPassword(password,user.password);
             if(!match){
-                return res.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, error: Constants.INVALIDPASSWORD });
+                return response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, error: Constants.INVALIDPASSWORD });
             }
         }
-        res.status(Constants.STATUSOK).json({ success: true, token: authService.generateJWTToken(user._id) });
+        response.status(Constants.STATUSOK).json({ success: true, token: authService.generateJWTToken(user._id) });
     } catch (error) {
         console.log(error.message);
         next(new CustomError(Constants.LOGINFAILED, error.message, 500));
@@ -45,36 +46,36 @@ exports.userLogin = async (req, res, next) => {
 };
 
 //Reset Password method that is used to set new password by using the reset token send on user's email address.
-exports.resetPassword = async (req, res) => {
-    const resetPasswordToken = crypto.createHash(Constants.HASHALGO).update(req.params.passwordResetToken).digest(Constants.HASHENCODING);
+exports.resetPassword = async (request, response) => {
+    const resetPasswordToken = crypto.createHash(Constants.HASHALGO).update(request.params.passwordResetToken).digest(Constants.HASHENCODING);
     try {
-        const user = await User.findOne({
+        const user = await Profile.findOne({
             resetPasswordToken,
             resetPasswordExpire: { $gt: Date.now() }
         });
 
         if (!user) {
-            return res.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, error: Constants.INVALIDJWTTOKEN });
+            return response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, error: Constants.INVALIDJWTTOKEN });
         }
 
-        user.password = await authService.getHashedPassword(req.body.password);
+        user.password = await authService.getHashedPassword(request.body.password);
         user.resetPasswordExpire = undefined;
         user.resetPasswordToken = undefined;
         await user.save();
 
-        res.status(Constants.STATUSOK).json({ success: true, token: authService.generateJWTToken(user._id) });
+        response.status(Constants.STATUSOK).json({ success: true, token: authService.generateJWTToken(user._id) });
     } catch (error) {
-        res.status(Constants.INTERNALERRORSTATUS).json({ success: false, error: error.message });
+        response.status(Constants.INTERNALERRORSTATUS).json({ success: false, error: error.message });
     }
 };
 
 //Forgot Password method mainly generates reset token and sent it through the email to user's email address.
-exports.forgotPassword = async (req, res) => {
-    const { email } = req.body;
+exports.forgotPassword = async (request, response) => {
+    const { email } = request.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await Profile.findOne({ email });
         if (!user) {
-            return res.status(Constants.STATUSNOTFOUND).json({ success: false, error: Constants.EMAILNOTEXISTS });
+            return response.status(Constants.STATUSNOTFOUND).json({ success: false, error: Constants.EMAILNOTEXISTS });
         }
 
         const resetToken = crypto.randomBytes(Constants.CRYPTOBYES).toString(Constants.HASHENCODING);
@@ -83,17 +84,18 @@ exports.forgotPassword = async (req, res) => {
 
         await user.save();
 
-        const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/resetpassword/${resetToken}`;
+        const resetUrl = `${request.protocol}://${request.get('host')}/api/auth/resetpassword/${resetToken}`;
 
         const message = Constants.EMAILBODY + `${resetUrl}`;
         await authService.sendEmail({ email: user.email, subject: Constants.EMAILSUBJECT, message });
 
-        res.status(Constants.STATUSOK).json({ success: true, message: Constants.RESETEMAILSENT });
+        response.status(Constants.STATUSOK).json({ success: true, message: Constants.RESETEMAILSENT });
     } catch (error) {
+        const user = await Profile.findOne({ email });
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
         await user.save();
-        res.status(Constants.INTERNALERRORSTATUS).json({ success: false, error: Constants.RESETEMAILERROR });
+        response.status(Constants.INTERNALERRORSTATUS).json({ success: false, error: Constants.RESETEMAILERROR });
     }
 };
 

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const Profile = require('../models/Profile');
 const Constants = require('../utils/Constants');
+const req = require("express/lib/request");
 
 exports.authenticate = async (request, response, next) => {
     let JWT;
@@ -10,14 +11,15 @@ exports.authenticate = async (request, response, next) => {
     }
 
     if (!JWT) {
-        return response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, message: Constants.NOTAUTHORIZEDMSG });
+        return response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, message: Constants.NOTAUTHENTICATEMSG });
     }
 
     try {
         const decodedUser = jwt.verify(JWT, process.env.JWT_SECRET);
-        request.user = await User.findById(decodedUser.id).select(Constants.REMOVEUSERCOLUMNPASSWORD);
+        const user  = await Profile.findById(decodedUser.id).select(Constants.REMOVEUSERCOLUMNPASSWORD);
+        request.user = user;
         next();
     } catch (error) {
-        response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, message: Constants.NOTAUTHORIZEDMSG });
+        response.status(Constants.STATUSNOTAUTHORIZED).json({ success: false, message: Constants.NOTAUTHENTICATEMSG });
     }
 };

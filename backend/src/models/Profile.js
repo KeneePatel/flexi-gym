@@ -1,15 +1,23 @@
 const mongoose = require('mongoose');
 
 //User Schema file that is used to store and retrieve data from mongodb cloud
-const UserSchema = new mongoose.Schema({
+const UserProfileSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
         required: true,
     },
-    fullName: {
+    firstName: {
         type: String,
-        required: true,
+        required: false,
+    },
+    lastName: {
+        type: String,
+        required: false,
+    },
+    gymName: {
+        type: String,
+        required: false,
     },
     password: {
         type: String,
@@ -25,14 +33,11 @@ const UserSchema = new mongoose.Schema({
     },
     address: {
         street: { type: String, required: false },
-        city: { type: String, required: false }
-    },
-    preference:{
-        type: String,
-        required: false,
+        city: { type: String, required: false },
+        province: { type: String, required: false },
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('UserProfile', UserProfileSchema);

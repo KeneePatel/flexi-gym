@@ -1,7 +1,7 @@
 module.exports = {
     BASEROUTEMSG : "Server has been started successfully",
-    EMAILEXISTS : "User with this email already exists.",
-    EMAILNOTEXISTS: "User with entered email address is not registered.",
+    EMAILEXISTS : "User Profile with this email already exists.",
+    EMAILNOTEXISTS: "User Profile with entered email address is not registered.",
     INVALIDPASSWORD: "Invalid Password",
     INVALIDJWTTOKEN : "Invalid Token",
     LOGINFAILED: "Login Failed",
@@ -11,6 +11,7 @@ module.exports = {
     USERNOTPERMITTED : 403,
     NOTFOUND : 404,
     NOTAUTHORIZEDMSG : "Not authorized",
+    NOTAUTHENTICATEMSG : "Not authenticate",
     INTERNALERRORSTATUS : 500,
     STATUSOK: 200,
     STATUSCREATED : 201,
@@ -25,4 +26,6 @@ module.exports = {
     RESETEMAILSENT : "Password reset link sent successfully on your email address.",
     RESETEMAILERROR: "Error occurred while sending password reset email.",
     REMOVEUSERCOLUMNPASSWORD : "-password",
+    GYMOWNER : "GymOwner",
+    GYMUSER : "GymUser"
 };
