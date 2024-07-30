@@ -2,11 +2,15 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import connectDB from './config/database';
+import {connectDB} from './config/database';
+
 
 import bookingsRouter from './routes/bookings';
+import gymRouter from './routes/gyms';
 
 dotenv.config();
+connectDB();
+
 
 const app = express();
 
@@ -16,10 +20,11 @@ app.use(helmet());
 app.use(express.json());
 
 // Connect to database
-connectDB();
+// connectDB();
 
 // Routes (to be added later)
 app.use('/api/bookings', bookingsRouter);
+app.use('/api/gyms', gymRouter);
 
 const PORT = process.env.PORT || 8080;
 

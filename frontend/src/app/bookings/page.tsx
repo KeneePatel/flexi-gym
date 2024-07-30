@@ -3,18 +3,22 @@
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
+import { useRouter } from 'next/navigation'
 interface Booking {
   startDate: string;
   endDate: string;
   charges: number | string; // Updated to allow for string values
   gymName: string;
   gymLocation: string;
+  _id: string;
+  gymId: string;
+  gym: any;
 }
 
 export default function Component() {
   const [currentBookings, setCurrentBookings] = useState<Booking[]>([]);
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -47,6 +51,9 @@ export default function Component() {
     }
     return `$${charges}`;
   };
+  const handleUpdate = (bookingId: string, gymId: string) => {
+    router.push(`/bookingConfirmation/${gymId}/${bookingId}`);
+  }
 
   return (
     <div className="container mx-auto px-6 py-8 sm:px-8 lg:px-10">
@@ -58,15 +65,15 @@ export default function Component() {
             {currentBookings.map((booking, index) => (
               <Card key={index} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
                 <div className="grid gap-2">
-                  <h3 className="text-lg font-semibold">{booking.gymName}</h3>
-                  <p className="text-muted-foreground">{booking.gymLocation}</p>
+                  <h3 className="text-lg font-semibold">{booking.gym.name}</h3>
+                  <p className="text-muted-foreground">{booking.gym.location}</p>
                   <p className="text-muted-foreground">
                     {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
                   </p>
                   <p className="font-medium">{formatCharges(booking.charges)}</p>
                 </div>
                 <div className="flex items-center justify-end">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={()=>handleUpdate(booking._id, booking.gym._id)}>
                     Update
                   </Button>
                 </div>

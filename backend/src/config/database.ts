@@ -4,15 +4,26 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const DB_NAME = "FlexiGym";
-const DB_URI = `${process.env.MONGODB_URI}/${DB_NAME}`
+const DB_URI = `${process.env.MONGODB_URI}`
 
-const connectDB = async () => {
-    await MongoClient.connect(DB_URI).then(() => {
-        console.log('MongoDB connected');
-    }).catch((error) => {
-        console.error('MongoDB connection error:', error);
-        process.exit(1);
-    });
-}
+let db: Db;
 
-export default connectDB;
+export const connectDB = async () => {
+  try {
+    const client = await MongoClient.connect(DB_URI);
+    db = client.db(DB_NAME);
+    console.log('MongoDB connected');
+  } catch (err: any) {
+    console.error(err.message);
+    process.exit(1);
+  }
+};
+
+export const getDB = (): Db => {
+  if (!db) {
+    connectDB();
+    throw new Error('Database not connected');
+  }
+  return db;
+};
+
