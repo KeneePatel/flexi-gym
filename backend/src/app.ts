@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import connectDB from './config/database';
 
+import bookingsRouter from './routes/bookings';
+
 dotenv.config();
 
 const app = express();
@@ -17,6 +19,7 @@ app.use(express.json());
 connectDB();
 
 // Routes (to be added later)
+app.use('/api/bookings', bookingsRouter);
 
 const PORT = process.env.PORT || 8080;
 
