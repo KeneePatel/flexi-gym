@@ -1,14 +1,38 @@
-"use client"
-import { useState, useEffect, useRef } from 'react'
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { BikeIcon, ChevronDownIcon, DumbbellIcon, LockIcon, MoonIcon, ShowerHeadIcon, StarIcon, TimerIcon } from "lucide-react"
-import Autoplay from "embla-carousel-autoplay"
-import { useParams, useRouter } from 'next/navigation'
-import { Skeleton } from "@/components/ui/skeleton"
+"use client";
+import { useState, useEffect, useRef } from "react";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselPrevious,
+    CarouselNext,
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+    Collapsible,
+    CollapsibleTrigger,
+    CollapsibleContent,
+} from "@/components/ui/collapsible";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+    BikeIcon,
+    ChevronDownIcon,
+    DumbbellIcon,
+    LockIcon,
+    MoonIcon,
+    ShowerHeadIcon,
+    StarIcon,
+    TimerIcon,
+    EditIcon,
+    TrashIcon,
+} from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useParams, useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function Component() {
     const params = useParams();
@@ -21,10 +45,10 @@ export default function Component() {
     const [limit] = useState(2);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
-    const plugin = useRef(
-        Autoplay({ delay: 2000, stopOnInteraction: true })
-    );
-
+    const [editingReview, setEditingReview] = useState(null);
+    const [newReview, setNewReview] = useState({ rating: 0, comment: "", username: "Harsh Mehta", userid: '66a576c7d989398aea3ba6af' });
+    const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: true }));
+    const [deleteReviewId, setDeleteReviewId] = useState(null);
     useEffect(() => {
         if (gymId) {
             const fetchGymDetails = async () => {
@@ -39,32 +63,103 @@ export default function Component() {
 
             fetchGymDetails();
         }
-    }, [gymId]);
+    }, [reviews]);
 
     useEffect(() => {
         if (gymId) {
             const fetchReviews = async () => {
                 try {
-                    const reviewsResponse = await fetch(`http://localhost:5000/reviews/${gymId}?page=${page}&limit=${limit}`);
+                    const reviewsResponse = await fetch(
+                        `http://localhost:5000/reviews/${gymId}?page=${page}&limit=${limit}`
+                    );
                     const reviewsData = await reviewsResponse.json();
-                    console.log("reviewsData", reviewsData);
-                    setReviews((prevReviews) => [...prevReviews, ...reviewsData.feedbacks]);
+                    setReviews((prevReviews) => [
+                        ...prevReviews,
+                        ...reviewsData.feedbacks,
+                    ]);
                     setTotalPages(reviewsData.totalPages);
                 } catch (error) {
                     console.error("Error fetching reviews:", error);
                 } finally {
                     setLoading(false);
-                    console.log("reviews", reviews);
                 }
             };
 
             fetchReviews();
         }
-    }, [page, limit]);
+    }, [page]);
 
     const handleShowMore = () => {
         setPage((prevPage) => prevPage + 1);
-    }
+    };
+
+    const handleAddReview = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/reviews", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...newReview,
+                    gymid: gymId,
+                    username: "Harsh Mehta",
+                    userid: '66a576c7d989398aea3ba6af',
+                    updatedDate: new Date().toISOString(),
+                }),
+            });
+            if (response.ok) {
+                setReviews((prevReviews) => [newReview, ...prevReviews]);
+                setNewReview({ rating: 0, comment: "" });
+            }
+        } catch (error) {
+            console.error("Error adding review:", error);
+        }
+    };
+
+    const handleEditReview = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/reviews/${editingReview._id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(editingReview),
+                }
+            );
+            if (response.ok) {
+                setReviews((prevReviews) =>
+                    prevReviews.map((review) =>
+                        review._id === editingReview._id ? editingReview : review
+                    )
+                );
+                setEditingReview(null);
+            }
+        } catch (error) {
+            console.error("Error editing review:", error);
+        }
+    };
+
+    const handleDeleteReview = async () => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/reviews/${deleteReviewId}`,
+                {
+                    method: "DELETE",
+                }
+            );
+            if (response.ok) {
+                setReviews((prevReviews) =>
+                    prevReviews.filter((review) => review._id !== deleteReviewId)
+                );
+                setDeleteReviewId(null);
+            }
+        } catch (error) {
+            console.error("Error deleting review:", error);
+        }
+    };
 
     if (loading) {
         return (
@@ -94,20 +189,35 @@ export default function Component() {
         return <div>Gym not found</div>;
     }
 
-    const { images, name, tagline, about, amenities, hours, price, location, ratings } = gymDetails;
+    const {
+        images,
+        name,
+        tagline,
+        about,
+        amenities,
+        hours,
+        price,
+        location,
+        ratings,
+    } = gymDetails;
     const totalRatings = parseInt(ratings.totalRatings);
     const ratingCount = parseInt(ratings.count);
     const averageRating = (totalRatings / ratingCount).toFixed(1);
 
     const handleBookNow = () => {
         router.push(`/bookingConfirmation/${gymId}/new`);
-    }
+    };
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-2 gap-8">
                 <div>
-                    <Carousel className="rounded-lg overflow-hidden" plugins={[plugin.current]} onMouseEnter={plugin.current.stop} onMouseLeave={plugin.current.reset}>
+                    <Carousel
+                        className="rounded-lg overflow-hidden"
+                        plugins={[plugin.current]}
+                        onMouseEnter={plugin.current.stop}
+                        onMouseLeave={plugin.current.reset}
+                    >
                         <CarouselContent>
                             {images.map((src, index) => (
                                 <CarouselItem key={index}>
@@ -133,11 +243,19 @@ export default function Component() {
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-0.5">
                             {Array.from({ length: 5 }, (_, index) => (
-                                <StarIcon key={index} className={`w-5 h-5 ${index < averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
+                                <StarIcon
+                                    key={index}
+                                    className={`w-5 h-5 ${index < averageRating
+                                        ? "fill-primary"
+                                        : "fill-muted stroke-muted-foreground"
+                                        }`}
+                                />
                             ))}
                         </div>
                         <div className="text-lg font-semibold">{averageRating}</div>
-                        <div className="text-sm text-muted-foreground">({ratingCount} reviews)</div>
+                        <div className="text-sm text-muted-foreground">
+                            ({ratingCount} reviews)
+                        </div>
                     </div>
                     <div className="grid gap-4">
                         <div>
@@ -152,19 +270,19 @@ export default function Component() {
                                         {(() => {
                                             switch (amenity) {
                                                 case "Free weights":
-                                                    return <DumbbellIcon className="w-5 h-5" />
+                                                    return <DumbbellIcon className="w-5 h-5" />;
                                                 case "Stationary bikes":
-                                                    return <BikeIcon className="w-5 h-5" />
+                                                    return <BikeIcon className="w-5 h-5" />;
                                                 case "Showers":
-                                                    return <ShowerHeadIcon className="w-5 h-5" />
+                                                    return <ShowerHeadIcon className="w-5 h-5" />;
                                                 case "Treadmills":
-                                                    return <TimerIcon className="w-5 h-5" />
+                                                    return <TimerIcon className="w-5 h-5" />;
                                                 case "Yoga studio":
-                                                    return <MoonIcon className="w-5 h-5" />
+                                                    return <MoonIcon className="w-5 h-5" />;
                                                 case "Lockers":
-                                                    return <LockIcon className="w-5 h-5" />
+                                                    return <LockIcon className="w-5 h-5" />;
                                                 default:
-                                                    return null
+                                                    return null;
                                             }
                                         })()}
                                         {amenity}
@@ -197,51 +315,150 @@ export default function Component() {
                 </div>
             </div>
             <Separator className="my-8" />
-            <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Reviews</h2>
-                <Collapsible>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-lg font-semibold [&[data-state=open]>svg]:rotate-180">
-                        <div>User Reviews</div>
-                        <ChevronDownIcon className="w-5 h-5 transition-transform" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <div className="grid gap-6">
-                            {reviews.length > 0 ? (
-                                reviews.map((review) => (
-                                    <div key={review._id} className="flex gap-4">
-                                        <Avatar className="border">
-                                            <AvatarImage src="/placeholder-user.jpg" />
-                                            <AvatarFallback>{review.username[0]}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="grid gap-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="font-semibold">{review.username}</div>
-                                                <div className="flex items-center gap-0.5 text-xs font-semibold">
-                                                    {Array.from({ length: 5 }, (_, index) => (
-                                                        <StarIcon key={index} className={`w-4 h-4 ${index < review.rating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">{new Date(review.updatedAt).toLocaleDateString()}</div>
-                                            <div className="text-sm text-muted-foreground">
-                                                {review.comment}
-                                            </div>
+            <div>
+                <h2 className="text-2xl font-bold mb-4">Reviews</h2>
+                {reviews.length > 0 ? (
+                    <div className="space-y-4">
+                        {reviews.map((review) => (
+                            <div key={review._id} className="border p-4 rounded-lg relative">
+                                <div className="absolute top-2 right-2 flex gap-2">
+                                    {/* {review.userid === newReview.userid && ( */}
+                                        <>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setEditingReview(review)}
+                                            >
+                                                <EditIcon className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setDeleteReviewId(review._id)}
+                                            >
+                                                <TrashIcon className="h-4 w-4" />
+                                            </Button>
+                                        </>
+                                    {/* )} */}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Avatar className="border">
+                                        <AvatarFallback>{review.username[0]}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-sm font-medium">{review.username}</p>
+                                        <div className="flex items-center gap-0.5">
+                                            {Array.from({ length: 5 }, (_, index) => (
+                                                <StarIcon
+                                                    key={index}
+                                                    className={`w-4 h-4 ${index < review.rating
+                                                        ? "fill-primary"
+                                                        : "fill-muted stroke-muted-foreground"
+                                                        }`}
+                                                />
+                                            ))}
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <div>No reviews yet</div>
-                            )}
-                        </div>
+                                </div>
+                                <p className="mt-2">{review.comment}</p>
+                            </div>
+                        ))}
                         {page < totalPages && (
-                            <Button className="w-full mt-4" onClick={handleShowMore}>
+                            <Button onClick={handleShowMore} variant="outline">
                                 Show More
                             </Button>
                         )}
-                    </CollapsibleContent>
-                </Collapsible>
-
+                    </div>
+                ) : (
+                    <p>No reviews yet.</p>
+                )}
+                <Dialog
+                    open={Boolean(deleteReviewId)}
+                    onOpenChange={() => setDeleteReviewId(null)}
+                >
+                    <DialogContent>
+                        <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+                        <p>Are you sure you want to delete this review?</p>
+                        <div className="flex justify-end gap-2 mt-4">
+                            <Button variant="outline" onClick={() => setDeleteReviewId(null)}>
+                                Cancel
+                            </Button>
+                            <Button variant="destructive" onClick={handleDeleteReview}>
+                                Delete
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
+
+            <Separator className="my-8" />
+            <div className="space-y-6">
+                <h2 className="text-2xl font-bold">Add a Review</h2>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        {Array.from({ length: 5 }, (_, index) => (
+                            <StarIcon
+                                key={index}
+                                className={`w-6 h-6 cursor-pointer ${index < newReview.rating
+                                    ? "fill-primary"
+                                    : "fill-muted stroke-muted-foreground"
+                                    }`}
+                                onClick={() =>
+                                    setNewReview((prev) => ({ ...prev, rating: index + 1 }))
+                                }
+                            />
+                        ))}
+                    </div>
+                    <Label htmlFor="comment">Comment</Label>
+                    <Input
+                        id="comment"
+                        value={newReview.comment}
+                        onChange={(e) =>
+                            setNewReview((prev) => ({ ...prev, comment: e.target.value }))
+                        }
+                    />
+                    <Button onClick={handleAddReview}>Submit Review</Button>
+                </div>
+            </div>
+
+            <Dialog open={!!editingReview} onOpenChange={() => setEditingReview(null)}>
+                <DialogContent>
+                    <h2 className="text-xl font-semibold">Edit Review</h2>
+                    {editingReview && (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                {Array.from({ length: 5 }, (_, index) => (
+                                    <StarIcon
+                                        key={index}
+                                        className={`w-6 h-6 cursor-pointer ${index < editingReview.rating
+                                            ? "fill-primary"
+                                            : "fill-muted stroke-muted-foreground"
+                                            }`}
+                                        onClick={() =>
+                                            setEditingReview((prev) => ({
+                                                ...prev,
+                                                rating: index + 1,
+                                            }))
+                                        }
+                                    />
+                                ))}
+                            </div>
+                            <Label htmlFor="edit-comment">Comment</Label>
+                            <Input
+                                id="edit-comment"
+                                value={editingReview.comment}
+                                onChange={(e) =>
+                                    setEditingReview((prev) => ({
+                                        ...prev,
+                                        comment: e.target.value,
+                                    }))
+                                }
+                            />
+                            <Button onClick={handleEditReview}>Save Changes</Button>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
-    )
+    );
 }

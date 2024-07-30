@@ -32,7 +32,7 @@ export default function Home() {
               <Link href="#">
                 <Button variant="outline">Become a Partner</Button>
               </Link>
-              <Link href="#">
+              <Link href="gyms">
                 <Button variant="outline">Explore Gyms</Button>
               </Link>
             </div>
