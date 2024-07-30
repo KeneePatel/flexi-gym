@@ -42,7 +42,7 @@ const paymentController = new PaymentController(
 
 // Routes (to be added later)
 app.use("/api/bookings", bookingsRouter);
-app.use('/api/gyms', gymRouter);
+// app.use('/api/gyms', gymRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 
 const PORT = process.env.PORT || 8080;
