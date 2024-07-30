@@ -1,25 +1,20 @@
+import { DUMMY_USER } from "@/lib/dummy-data";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { getInitialsFromUser } from "@/lib/utils";
 
-interface ProfileAvatarProps {
-    display?: string;
-    name?: string;
-    size?: number;
-}
+type ProfileAvatarProps = {
+  size?: number;
+};
 
 const DEFAULT_AVATAR_SIZE = 50;
 
-// @ts-ignore
-const ProfileAvatar: React.FC<ProfileAvatarProps> = ({ display, name, size }) => {
-    const avatarSize = size || DEFAULT_AVATAR_SIZE;
+export default function ProfileAvatar(props: ProfileAvatarProps) {
+  const size = props?.size ? props.size : DEFAULT_AVATAR_SIZE;
 
-    return (
-        <Avatar>
-            <AvatarImage alt={name || display || 'Profile Avatar'} height={avatarSize} width={avatarSize} />
-            <AvatarFallback>
-                {name ? name[0].toUpperCase() : display || '?'}
-            </AvatarFallback>
-        </Avatar>
-    );
-};
-
-export default ProfileAvatar;
+  return (
+    <Avatar>
+      <AvatarImage alt={`@${DUMMY_USER.userName}`} height={size} width={size} />
+      <AvatarFallback>{getInitialsFromUser(DUMMY_USER)}</AvatarFallback>
+    </Avatar>
+  );
+}
