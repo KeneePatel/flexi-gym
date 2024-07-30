@@ -92,6 +92,98 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
             items: bookingsWithGymDetails,
         });
     } catch (error) {
+        console.log(`error caught in bookings: ${error}`);
+        next(error);
+    }
+});
+
+router.get('/:bookingId', async (req: Request, res: Response, next: NextFunction) => {
+    initializeCollections();
+
+    const { bookingId } = req.params;
+
+    if (!validateObjectId(bookingId)) {
+        return res.status(400).json({ message: 'Invalid booking ID' });
+    }
+
+    try {
+        const booking = await bookingsCollection.findOne({ _id: new ObjectId(bookingId) });
+
+        if (!booking) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        const gym = await gymsCollection.findOne({ _id: new ObjectId(booking.gymId) });
+
+        res.json({
+            _id: booking._id,
+            userId: booking.userId,
+            startDate: booking.startDate,
+            endDate: booking.endDate,
+            charges: booking.charges,
+            gym: gym ? gym : null
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// New route to delete a booking
+router.delete('/:bookingId', async (req: Request, res: Response, next: NextFunction) => {
+    initializeCollections();
+
+    const { bookingId } = req.params;
+
+    if (!validateObjectId(bookingId)) {
+        return res.status(400).json({ message: 'Invalid booking ID' });
+    }
+
+    try {
+        const result = await bookingsCollection.deleteOne({ _id: new ObjectId(bookingId) });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        res.json({ message: 'Booking deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// New route to update a booking
+router.put('/:bookingId', async (req: Request, res: Response, next: NextFunction) => {
+    initializeCollections();
+
+    const { bookingId } = req.params;
+    const { startDate, endDate, charges } = req.body;
+
+    if (!validateObjectId(bookingId)) {
+        return res.status(400).json({ message: 'Invalid booking ID' });
+    }
+
+    if (!startDate || !endDate || charges === undefined) {
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    try {
+        const updatedBooking = {
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            charges: Number(charges)
+        };
+
+        const result = await bookingsCollection.updateOne(
+            { _id: new ObjectId(bookingId) },
+            { $set: updatedBooking }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        res.json({ message: 'Booking updated successfully', updatedBooking });
+    } catch (error) {
         next(error);
     }
 });
