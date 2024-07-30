@@ -46,6 +46,8 @@ const SearchGyms = () => {
 
   return (
 
+  <div style={{ marginTop: '30px' }}>
+
     <div>
       <input
         type="text"
@@ -79,7 +81,8 @@ const SearchGyms = () => {
       </DropdownMenu>
 
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
+      <div div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
+        
         {gyms.length > 0 ? gyms.map(gym => (
           <Card key={gym._id} style={{ width: '18rem' }}>
             <CardHeader>
@@ -91,8 +94,8 @@ const SearchGyms = () => {
             <CardContent>
               <Image 
                 src ={gym.images && gym.images[0]} alt={`${gym.name} image`}
-                width={30}
-                height={30} 
+                width={800}
+                height={700} 
               />
               <p>About: {gym.about}</p>
             </CardContent>
@@ -104,6 +107,7 @@ const SearchGyms = () => {
       </div>
     </div>
 
+  </div>
   );
 };
 
