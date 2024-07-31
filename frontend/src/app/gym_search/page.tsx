@@ -101,7 +101,7 @@ const SearchGyms = () => {
                 {(gym.ratings.totalRatings / gym.ratings.count).toFixed(1)}
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">{gym.location.street}</p>
+            <p className="text-sm text-muted-foreground">{gym.location.street}, {gym.location.city}</p>
             <div className="flex items-center justify-between mt-2">
               <p className="text-lg font-semibold">${gym.price}/day</p>
               <Button variant="outline" size="sm">
