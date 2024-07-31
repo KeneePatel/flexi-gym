@@ -1,3 +1,10 @@
+/*
+ * File: page.tsx
+ * Author: Harsh Mehta <harsh.mehta@dal.ca>
+ * Date: 2024-07-30
+ * Description: Use for creating new booking or edit existing booking.
+ */
+
 "use client"
 
 import { useState, useEffect, useRef } from 'react'

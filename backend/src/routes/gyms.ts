@@ -1,3 +1,10 @@
+/*
+ * File: reviews.ts
+ * Author: Harsh Mehta <harsh.mehta@dal.ca>
+ * Date: 2024-07-30
+ * Description: API operations for the gyms.
+ */
+
 import { Router } from 'express';
 import { getDB } from '../config/database';
 import express, { Request, Response, NextFunction } from 'express';
