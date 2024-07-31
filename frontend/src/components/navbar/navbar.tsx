@@ -19,7 +19,7 @@ export default function NavBar() {
         <nav className="hidden md:flex items-center text-sm font-medium">
           {INITIAL_LINKS.map((link, index) => {
             return (
-              <Link key={index} href="#" prefetch={false}>
+              <Link key={index} href={link.ref} prefetch={false}>
                 <Button variant="link" className="px-2">
                   {link.name}
                 </Button>
