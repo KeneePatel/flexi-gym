@@ -32,7 +32,7 @@ app.use(express.json());
 // Connect to database
 // connectDB();
 
-// Dependency injection
+// Dependency injectio
 const stripeService = new StripeService(process.env.STRIPE_SECRET_KEY!);
 const bookingRepository = new BookingRepository();
 const paymentController = new PaymentController(
