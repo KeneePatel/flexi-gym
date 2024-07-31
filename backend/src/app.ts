@@ -53,6 +53,7 @@ app.use("/totalBookedUsers", totalBookedUsers);
 app.use("/monthlyEarnings", monthlyEarnings);
 app.use("/monthlyBookings", monthlyBookings);
 app.use('/api/gyms', gymRouter);
+app.use('/api/reviews', reviewsRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 
 const PORT = process.env.PORT || 8080;
