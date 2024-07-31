@@ -19,7 +19,7 @@ connectDB();
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -33,7 +33,7 @@ app.use(express.json());
 // Connect to database
 // connectDB();
 
-// Dependency injection
+// Dependency injectio
 const stripeService = new StripeService(process.env.STRIPE_SECRET_KEY!);
 const bookingRepository = new BookingRepository();
 const paymentController = new PaymentController(
