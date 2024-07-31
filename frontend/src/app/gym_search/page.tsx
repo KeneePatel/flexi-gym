@@ -81,7 +81,7 @@ const SearchGyms = () => {
       </DropdownMenu>
 
 
-      <div div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
         
         {gyms.length > 0 ? gyms.map(gym => (
           <Card key={gym._id} style={{ width: '18rem' }}>

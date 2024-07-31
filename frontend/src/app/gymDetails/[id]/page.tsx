@@ -133,7 +133,7 @@ export default function Component() {
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-0.5">
                             {Array.from({ length: 5 }, (_, index) => (
-                                <StarIcon key={index} className={`w-5 h-5 ${index < averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
+                                <StarIcon key={index} className={`w-5 h-5 ${index < +averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
                             ))}
                         </div>
                         <div className="text-lg font-semibold">{averageRating}</div>
