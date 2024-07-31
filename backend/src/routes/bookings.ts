@@ -73,8 +73,8 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
                 return {
                     _id: booking._id,
                     userId: booking.userId,
-                    startDate: booking.startDate, // Format startDate
-                    endDate: booking.endDate, // Format endDate
+                    startDate: booking.startDate.toISOString().split('T')[0], // Format startDate
+                    endDate: booking.endDate.toISOString().split('T')[0], // Format endDate
                     charges: booking.charges,
                     gym: gym ? gym : null
                 };

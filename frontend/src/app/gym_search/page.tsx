@@ -81,7 +81,7 @@ const SearchGyms = () => {
       </DropdownMenu>
 
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
+      <div div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
         
         {gyms.length > 0 ? gyms.map(gym => (
           <Card key={gym._id} style={{ width: '18rem' }}>
@@ -97,7 +97,7 @@ const SearchGyms = () => {
                 width={800}
                 height={700} 
               />
-              <p>About: {gym.about}</p>
+              <p>{gym.about}</p>
             </CardContent>
             <CardFooter>
               <p>Price: ${gym.price}</p>

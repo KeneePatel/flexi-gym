@@ -115,17 +115,13 @@ export default function Component() {
 
     const handleCheckout = () => {
         console.log("gymId", gymId);
-    
-        // Ensure gymId is a string
-        const gymIdString = Array.isArray(gymId) ? gymId.join(',') : gymId;
-    
         const query = new URLSearchParams({
-            gymId: gymIdString,
+            gymId: gymId,
             startDate: startDate?.toISOString() || '',
             endDate: endDate?.toISOString() || '',
             charges: totalPrice.toString()
         }).toString();
-    
+
         router.push(`/checkout?${query}`);
     }
 
@@ -203,7 +199,7 @@ export default function Component() {
                         <div className="flex items-center gap-2">
                             <div className="flex items-center gap-0.5">
                                 {Array.from({ length: 5 }, (_, index) => (
-                                    <StarIcon key={index} className={`w-5 h-5 ${index < +averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
+                                    <StarIcon key={index} className={`w-5 h-5 ${index < averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
                                 ))}
                             </div>
                             <span className="text-sm font-medium">{averageRating}</span>
@@ -218,7 +214,7 @@ export default function Component() {
                             <div className="flex items-center gap-2 text-sm">
                                 <div className="flex items-center gap-0.5">
                                     {Array.from({ length: 5 }, (_, index) => (
-                                        <StarIcon key={index} className={`w-5 h-5 ${index < +averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
+                                        <StarIcon key={index} className={`w-5 h-5 ${index < averageRating ? 'fill-primary' : 'fill-muted stroke-muted-foreground'}`} />
                                     ))}
                                 </div>
                                 <span>{averageRating}</span>
