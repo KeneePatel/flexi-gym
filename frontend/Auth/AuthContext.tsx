@@ -1,6 +1,6 @@
 'use client';
 import React, {createContext, useState, useEffect, ReactNode} from 'react';
-import { getAccessToken,setAccessToken } from '@/Auth/AuthService';
+import { getAccessToken,setAccessToken } from "../Auth/AuthService";
 import {jwtDecode} from "jwt-decode";
 interface AuthContextType {
     isAuthenticated: boolean;
