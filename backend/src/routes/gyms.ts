@@ -127,25 +127,66 @@ router.post('/search', async (req: Request, res: Response, next: NextFunction) =
             query['location.city'] = { $regex: city, $options: 'i' };  // Case-insensitive search for city
         }
 
-        // Determine sorting based on the sort option
+        
+
+
+//         // Determine sorting based on the sort option
+//         switch (sortOption) {
+//             case 'Price (lowest first)':
+//                 sort = { price: 1 };  // Ascending order by price
+//                 break;
+//             case 'Best reviewed and lowest price':
+//                 sort = { 'ratings.totalRatings': -1, price: 1 };  // Best reviews and then lowest price
+//                 break;
+//             case 'Property rating (high to low)':
+//                 sort = { 'ratings.totalRatings': -1 };  // Descending order by ratings
+//                 break;
+//             default:
+//                 sort = {};  // No sorting applied or default sorting
+//                 break;
+//         }
+
+//         // Execute the query with the specified sort
+//         const limit = city ? 0 : 10;  // Limit to 10 only if no city is specified
+//         const gyms = await gymsCollection.find(query).sort(sort).limit(limit).toArray();
+
+//         res.json(gyms);
+//     } catch (error) {
+//         console.error('Failed to find gyms:', error);
+//         next(error);  // Pass errors to the error handling middleware
+//     }
+// });
+
+        // Fetch the gyms from the database without applying sort
+        const gyms = await gymsCollection.find(query).toArray();
+
+        // Sort the gyms in memory based on the selected sort option
         switch (sortOption) {
             case 'Price (lowest first)':
-                sort = { price: 1 };  // Ascending order by price
+                gyms.sort((a, b) => a.price - b.price);
                 break;
             case 'Best reviewed and lowest price':
-                sort = { 'ratings.totalRatings': -1, price: 1 };  // Best reviews and then lowest price
+                gyms.sort((a, b) => {
+                    const avgRatingA = a.ratings.count > 0 ? a.ratings.totalRatings / a.ratings.count : 0;
+                    const avgRatingB = b.ratings.count > 0 ? b.ratings.totalRatings / b.ratings.count : 0;
+                    return avgRatingB - avgRatingA || a.price - b.price;
+                });
                 break;
             case 'Property rating (high to low)':
-                sort = { 'ratings.totalRatings': -1 };  // Descending order by ratings
+                gyms.sort((a, b) => {
+                    const avgRatingA = a.ratings.count > 0 ? a.ratings.totalRatings / a.ratings.count : 0;
+                    const avgRatingB = b.ratings.count > 0 ? b.ratings.totalRatings / b.ratings.count : 0;
+                    return avgRatingB - avgRatingA;
+                });
                 break;
             default:
-                sort = {};  // No sorting applied or default sorting
+                // No additional sorting if not specified
                 break;
         }
 
-        // Execute the query with the specified sort
+                // Execute the query with the specified sort
         const limit = city ? 0 : 10;  // Limit to 10 only if no city is specified
-        const gyms = await gymsCollection.find(query).sort(sort).limit(limit).toArray();
+        
 
         res.json(gyms);
     } catch (error) {
@@ -153,7 +194,6 @@ router.post('/search', async (req: Request, res: Response, next: NextFunction) =
         next(error);  // Pass errors to the error handling middleware
     }
 });
-
 // Error handling middleware
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
