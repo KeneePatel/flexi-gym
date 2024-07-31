@@ -22,6 +22,7 @@ interface DecodedToken {
   lastName?: string;
   gymName?: string;
   type?: string;
+  id?: string;
 }
 
 export function ProfileDropdown() {
@@ -68,7 +69,7 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link
-                href="/profile"
+                href={`/profile/${profileData?.id}`}
                 className="flex items-center gap-2"
                 prefetch={false}
             >
