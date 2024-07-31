@@ -50,8 +50,7 @@ app.use("/totalEarnings", totalEarnings);
 app.use("/totalBookedUsers", totalBookedUsers);
 app.use("/monthlyEarnings", monthlyEarnings);
 app.use("/monthlyBookings", monthlyBookings);
-
-// app.use('/api/gyms', gymRouter);
+app.use('/api/gyms', gymRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 
 app.listen(process.env.PORT, () => {
