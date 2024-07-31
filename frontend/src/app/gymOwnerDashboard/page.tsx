@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Line } from "react-chartjs-2";
+import {getProfileData} from "../../../Auth/AuthService";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -36,6 +37,23 @@ const Dashboard = () => {
   const [monthlyEarnings, setMonthlyEarnings] = useState([]);
   const [earnings, setEarnings] = useState<number>(0);
   const [users, setUsers] = useState<User[]>([]);
+
+  const [profileData, setProfileData] = useState(null);
+  const userProfile = getProfileData();
+  // console.log(profileData?.id);
+
+  useEffect(() => {
+
+    if (userProfile) {
+      try {
+        // @ts-ignore
+        setProfileData(userProfile);
+      } catch (error) {
+        console.error('Token decoding failed:', error);
+      }
+    }
+
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
