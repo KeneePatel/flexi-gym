@@ -7,16 +7,16 @@
 
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
-import { Card } from "@/components/ui/card"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, StarIcon } from "lucide-react"
-import Autoplay from "embla-carousel-autoplay"
-import { useParams, useRouter } from 'next/navigation'
+import { Card } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import Autoplay from "embla-carousel-autoplay"
+import { CalendarIcon, StarIcon } from "lucide-react"
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 const normalizeDate = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -35,6 +35,8 @@ export default function Component() {
     const [totalDays, setTotalDays] = useState<number | undefined>(1)
     const [totalPrice, setTotalPrice] = useState<number>(0)
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false)
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
     const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: true }))
 
     useEffect(() => {
@@ -154,8 +156,14 @@ export default function Component() {
             }
         } catch (error) {
             console.error('Error rescheduling booking:', error);
+        } finally {
+            setRescheduleDialogOpen(false);
         }
     };
+
+    const handleCancel = () => {
+        router.push(`/bookings`)
+    }
 
 
     if (loading) {
@@ -193,7 +201,7 @@ export default function Component() {
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Card className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-start">
-                <div className="relative overflow-hidden rounded-lg">
+                <div className="relative overflow-hidden rounded-lg m-2">
                     <img
                         src={images[0]}
                         alt="Gym image"
@@ -214,7 +222,7 @@ export default function Component() {
                         <h3 className="text-xl font-bold">{name}</h3>
                     </div>
                 </div>
-                <div className="grid gap-4">
+                <div className="grid gap-4 m-4">
                     <div className="flex items-center justify-between">
                         <div className="grid gap-1">
                             <h3 className="text-2xl font-bold">{name}</h3>
@@ -232,8 +240,8 @@ export default function Component() {
                         )}
                     </div>
                     <div className="grid gap-2">
-                        <div className="flex items-center gap-2">
-                            <CalendarIcon className="w-5 h-5 text-muted-foreground" />
+                        <div className="flex items-center gap-2 m-4">
+                            <CalendarIcon width={"20"} height={"20"} className="w-5 h-5 text-muted-foreground" />
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button variant="outline" className="flex-col items-start w-full h-auto">
@@ -300,7 +308,8 @@ export default function Component() {
                         bookingId &&
                         bookingId !== 'new' &&
                         (
-                            <div className='flex gap-4'>
+                            <div className='flex flex-col gap-4 m-4'>
+                                <div className="flex gap-4">
                                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                     <DialogTrigger asChild>
                                         <Button size="lg" variant="destructive" className="w-full">Delete Booking</Button>
@@ -314,9 +323,37 @@ export default function Component() {
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
-                                <Button size="lg" className="w-full" disabled={isButtonDisabled} onClick={handleReschedule}>
-                                    Reschedule
-                                </Button>
+                                <Dialog open={rescheduleDialogOpen} onOpenChange={setRescheduleDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button size="lg" className="w-full" disabled={isButtonDisabled}>
+                                            Reschedule
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogTitle>Confirm Reschedule</DialogTitle>
+                                        <p>Are you sure you want to reschedule this booking?</p>
+                                        <DialogFooter>
+                                            <Button variant="outline" onClick={() => setRescheduleDialogOpen(false)} className="w-full">No</Button>
+                                            <Button variant="destructive" onClick={handleReschedule} className="w-full">Yes</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                                </div>
+                                <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" size="lg" className="w-full" disabled={isButtonDisabled}>
+                                            Cancel
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogTitle>Discard Changes</DialogTitle>
+                                        <p>Are you sure you want to discard all changes?</p>
+                                        <DialogFooter>
+                                            <Button variant="outline" onClick={() => setCancelDialogOpen(false)} className="w-full">No</Button>
+                                            <Button variant="destructive" onClick={handleCancel} className="w-full">Yes</Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                         )
                     }
