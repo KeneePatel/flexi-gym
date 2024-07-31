@@ -97,7 +97,7 @@ const SearchGyms = () => {
                 width={800}
                 height={700} 
               />
-              <p>About: {gym.about}</p>
+              <p>{gym.about}</p>
             </CardContent>
             <CardFooter>
               <p>Price: ${gym.price}</p>

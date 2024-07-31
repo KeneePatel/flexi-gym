@@ -11,19 +11,25 @@ export function getNameFromUser(user: UserType) {
 }
 
 export function getNameFromFirstAndLastName(
-  firstName: string,
-  lastName: string,
+    firstName: string,
+    lastName: string,
 ) {
   return `${firstName} ${lastName}`;
 }
 
-export function getInitialsFromUser(user: UserType) {
+export function getInitialsFromUser(user: { firstName: string; lastName: string }) {
   return getInitialsFromFirstAndLastName(user.firstName, user.lastName);
 }
 
+export function getGymInitials(gymName: string): string {
+  const words = gymName.split(' ');
+  const initials = words.map(word => word.charAt(0).toUpperCase());
+  return initials.join('');
+}
+
 export function getInitialsFromFirstAndLastName(
-  firstName: string,
-  lastName: string,
+    firstName: string,
+    lastName: string,
 ) {
   return `${firstName.charAt(0).toUpperCase()}${lastName.charAt(0).toUpperCase()}`;
 }
