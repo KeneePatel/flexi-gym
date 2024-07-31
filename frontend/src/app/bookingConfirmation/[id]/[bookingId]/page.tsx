@@ -27,7 +27,7 @@ export default function Component() {
     const gymId = params.id;
     const bookingId = params.bookingId;
     const router = useRouter();
-    
+
     const [gymDetails, setGymDetails] = useState(null)
     const [loading, setLoading] = useState(true)
     const [startDate, setStartDate] = useState<Date | undefined>(new Date())
@@ -102,6 +102,7 @@ export default function Component() {
             setTotalPrice(gymDetails.price);
         }
     }
+
     const handleDelete = async () => {
         try {
             if (bookingId) {
@@ -118,6 +119,45 @@ export default function Component() {
             setDialogOpen(false);
         }
     }
+
+    const handleCheckout = () => {
+        console.log("gymId", gymId);
+        const query = new URLSearchParams({
+            gymId: gymId,
+            startDate: startDate?.toISOString() || '',
+            endDate: endDate?.toISOString() || '',
+            charges: totalPrice.toString()
+        }).toString();
+
+        router.push(`/checkout?${query}`);
+    }
+
+    const handleReschedule = async () => {
+        try {
+            if (bookingId && startDate && endDate) {
+                const updatedBooking = {
+                    startDate: startDate.toISOString(),
+                    endDate: endDate.toISOString(),
+                    charges: totalPrice
+                };
+
+                await fetch(`http://localhost:8080/api/bookings/${bookingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedBooking),
+                });
+
+                console.log('Booking rescheduled successfully');
+                router.push(`/bookings`); // Redirect to bookings page or wherever appropriate
+            }
+        } catch (error) {
+            console.error('Error rescheduling booking:', error);
+        }
+    };
+
+
     if (loading) {
         return (<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-2 gap-8">
@@ -187,7 +227,9 @@ export default function Component() {
                                 <span>{averageRating}</span>
                             </div>
                         </div>
-                        <div className="text-2xl font-bold">${totalPrice}</div>
+                        {bookingId === 'new' && (
+                            <div className="text-2xl font-bold">${totalPrice}</div>
+                        )}
                     </div>
                     <div className="grid gap-2">
                         <div className="flex items-center gap-2">
@@ -247,7 +289,12 @@ export default function Component() {
                         {totalDays !== undefined && (
                             <div className="text-sm text-muted-foreground">Total days: {totalDays}</div>
                         )}
-                        <div className="text-sm text-muted-foreground">Price may vary based on selected dates</div>
+                        {bookingId === 'new' && (
+                            <div className="text-sm text-muted-foreground">Price may vary based on selected dates</div>
+                        )}
+                        {bookingId !== 'new' && (
+                            <div className="text-sm text-muted-foreground">If you decide to reschedule, an agent will reach out to you shortly to provide information on any adjustments to the fee.</div>
+                        )}
                     </div>
                     {
                         bookingId &&
@@ -267,7 +314,7 @@ export default function Component() {
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
-                                <Button size="lg" className="w-full" disabled={isButtonDisabled}>
+                                <Button size="lg" className="w-full" disabled={isButtonDisabled} onClick={handleReschedule}>
                                     Reschedule
                                 </Button>
                             </div>
@@ -276,7 +323,7 @@ export default function Component() {
                     {
                         bookingId &&
                         bookingId === 'new' &&
-                        <Button size="lg" className="w-full" disabled={isButtonDisabled}>
+                        <Button size="lg" className="w-full" disabled={isButtonDisabled} onClick={handleCheckout}>
                             Proceed to checkout
                         </Button>
                     }

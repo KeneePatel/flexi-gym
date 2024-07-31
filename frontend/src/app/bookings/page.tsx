@@ -9,11 +9,12 @@
 import { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+
 interface Booking {
   startDate: string;
   endDate: string;
-  charges: number | string; // Updated to allow for string values
+  charges: number | string;
   gymName: string;
   gymLocation: string;
   _id: string;
@@ -29,7 +30,7 @@ export default function Component() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/bookings/user/66a8129ffa48505c5ed80597');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/66a8129ffa48505c5ed80597`);
         const data = await response.json();
 
         const now = new Date();
@@ -51,6 +52,10 @@ export default function Component() {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  const formatLocation = (location: { street: string; city: string; country: string; coordinates: [number, number] }) => {
+    return `${location.street}, ${location.city}, ${location.country}`;
+  };
+
   const formatCharges = (charges: number | string) => {
     if (typeof charges === 'number') {
       return `$${charges.toFixed(2)}`;
@@ -68,11 +73,11 @@ export default function Component() {
         <div>
           <h2 className="text-xl font-bold mb-4">Current Bookings</h2>
           <div className="grid gap-6">
-            {currentBookings.map((booking, index) => (
+            {currentBookings && currentBookings.map((booking, index) => (
               <Card key={index} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
                 <div className="grid gap-2">
                   <h3 className="text-lg font-semibold">{booking.gym.name}</h3>
-                  <p className="text-muted-foreground">{booking.gym.location}</p>
+                  <p className="text-muted-foreground">{formatLocation(booking.gym.location)}</p>
                   <p className="text-muted-foreground">
                     {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
                   </p>
@@ -90,7 +95,7 @@ export default function Component() {
         <div>
           <h2 className="text-xl font-bold mb-4">Past Bookings</h2>
           <div className="grid gap-6">
-            {pastBookings.map((booking, index) => (
+            {pastBookings && pastBookings.map((booking, index) => (
               <Card key={index} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
                 <div className="grid gap-2">
                   <h3 className="text-lg font-semibold">{booking.gymName}</h3>
