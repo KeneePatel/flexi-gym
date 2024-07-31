@@ -1,3 +1,9 @@
+/*
+ * File: reviews.ts
+ * Author: Harsh Mehta <harsh.mehta@dal.ca>
+ * Date: 2024-07-30
+ * Description: API operations for the reviews.
+ */
 import { Router, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { getDB } from '../config/database';

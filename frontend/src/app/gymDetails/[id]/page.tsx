@@ -1,3 +1,10 @@
+/*
+ * File: page.tsx
+ * Author: Harsh Mehta <harsh.mehta@dal.ca>
+ * Date: 2024-07-30
+ * Description: Use for displaying gym details.
+ */
+
 "use client";
 import { useState, useEffect, useRef } from "react";
 import {
