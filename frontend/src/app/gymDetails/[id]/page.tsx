@@ -53,7 +53,7 @@ export default function Component() {
         if (gymId) {
             const fetchGymDetails = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5000/gyms/${gymId}`);
+                    const response = await fetch(`http://localhost:8080/api/gyms/${gymId}`);
                     const data = await response.json();
                     setGymDetails(data);
                 } catch (error) {
@@ -70,7 +70,7 @@ export default function Component() {
             const fetchReviews = async () => {
                 try {
                     const reviewsResponse = await fetch(
-                        `http://localhost:5000/reviews/${gymId}?page=${page}&limit=${limit}`
+                        `http://localhost:8080/api/reviews/${gymId}?page=${page}&limit=${limit}`
                     );
                     const reviewsData = await reviewsResponse.json();
                     setReviews((prevReviews) => [
@@ -95,7 +95,7 @@ export default function Component() {
 
     const handleAddReview = async () => {
         try {
-            const response = await fetch("http://localhost:5000/reviews", {
+            const response = await fetch("http://localhost:8080/api/reviews", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export default function Component() {
     const handleEditReview = async () => {
         try {
             const response = await fetch(
-                `http://localhost:5000/reviews/${editingReview._id}`,
+                `http://localhost:8080/api/reviews/${editingReview._id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -145,7 +145,7 @@ export default function Component() {
     const handleDeleteReview = async () => {
         try {
             const response = await fetch(
-                `http://localhost:5000/reviews/${deleteReviewId}`,
+                `http://localhost:8080/api/reviews/${deleteReviewId}`,
                 {
                     method: "DELETE",
                 }
@@ -306,7 +306,7 @@ export default function Component() {
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Location</h2>
-                            <div className="text-muted-foreground">{location}</div>
+                            <div className="text-muted-foreground">{location.city}</div>
                         </div>
                         <Button size="lg" className="w-full" onClick={handleBookNow}>
                             Book Now

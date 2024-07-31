@@ -6,6 +6,7 @@ import {connectDB} from './config/database';
 
 
 import gymRouter from './routes/gyms';
+import reviewsRouter from './routes/reviews';
 
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
@@ -42,8 +43,9 @@ const paymentController = new PaymentController(
 
 // Routes (to be added later)
 app.use("/api/bookings", bookingsRouter);
-// app.use('/api/gyms', gymRouter);
+app.use('/api/gyms', gymRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
+app.use("/api/reviews", reviewsRouter);
 
 const PORT = process.env.PORT || 8080;
 

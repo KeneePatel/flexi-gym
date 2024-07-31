@@ -12,7 +12,7 @@ export default function GymList() {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await fetch('http://localhost:5000/gyms');
+        const response = await fetch('http://localhost:8080/api/gyms');
         if (!response.ok) {
           throw new Error('Failed to fetch gyms');
         }
@@ -55,7 +55,7 @@ export default function GymList() {
                 {(gym.ratings.totalRatings / gym.ratings.count).toFixed(1)}
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">{gym.location}</p>
+            <p className="text-sm text-muted-foreground">{gym.location.street}</p>
             <div className="flex items-center justify-between mt-2">
               <p className="text-lg font-semibold">${gym.price}/month</p>
               <Button variant="outline" size="sm">

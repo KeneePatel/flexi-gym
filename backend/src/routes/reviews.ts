@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDB } from '../config/db';
+import { getDB } from '../config/database';
 
 const router = Router();
 
