@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
     const bookings = await db.collection('bookings').find({ gymId: req.params.id }).toArray();
     const totalBookingAmount = bookings.reduce((total, booking) => {
       // Remove the $ sign and parse the number
-      const amount = parseInt(booking.charges.replace('$', ''), 10);
+      const amount = booking.charges;
       return total + amount;
     }, 0);
 

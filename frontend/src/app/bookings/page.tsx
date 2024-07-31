@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
+import ProtectedRoute from '../../../Auth/ProtectedRoutes';
 
 interface Booking {
   startDate: string;
@@ -67,6 +68,7 @@ export default function Component() {
   }
 
   return (
+      <ProtectedRoute>
     <div className="container mx-auto px-6 py-8 sm:px-8 lg:px-10">
       <h1 className="text-2xl font-bold mb-6">Booking History</h1>
       <div className="grid gap-8">
@@ -116,5 +118,6 @@ export default function Component() {
         </div>
       </div>
     </div>
+      </ProtectedRoute>
   );
 }
