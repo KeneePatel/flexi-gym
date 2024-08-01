@@ -19,7 +19,9 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 const normalizeDate = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    normalized.setHours(0, 0, 0, 0);
+    return normalized;
 }
 
 export default function Component() {
@@ -30,8 +32,8 @@ export default function Component() {
 
     const [gymDetails, setGymDetails] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [startDate, setStartDate] = useState<Date | undefined>(new Date())
-    const [endDate, setEndDate] = useState<Date | undefined>(new Date())
+    const [startDate, setStartDate] = useState<Date | undefined>(() => normalizeDate(new Date()))
+    const [endDate, setEndDate] = useState<Date | undefined>(() => normalizeDate(new Date()))
     const [totalDays, setTotalDays] = useState<number | undefined>(1)
     const [totalPrice, setTotalPrice] = useState<number>(0)
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -43,7 +45,6 @@ export default function Component() {
         const fetchData = async () => {
             try {
                 if (gymId) {
-                    console.log(bookingId);
                     const gymResponse = await fetch(`http://localhost:8080/api/gyms/${gymId}`);
                     const gymData = await gymResponse.json();
                     setGymDetails(gymData);
@@ -51,12 +52,10 @@ export default function Component() {
                 }
 
                 if (bookingId && bookingId !== 'new') {
-                    console.log(`is new? ${bookingId && bookingId !== 'new'}`);
                     const bookingResponse = await fetch(`http://localhost:8080/api/bookings/${bookingId}`);
                     const bookingData = await bookingResponse.json();
-                    console.log("start date", bookingData.startDate);
-                    setStartDate(new Date(bookingData.startDate));
-                    setEndDate(new Date(bookingData.endDate));
+                    setStartDate(normalizeDate(new Date(bookingData.startDate)));
+                    setEndDate(normalizeDate(new Date(bookingData.endDate)));
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -74,14 +73,20 @@ export default function Component() {
     }, [gymDetails, startDate, endDate]);
 
     const handleStartDateChange = (date: Date | undefined) => {
-        if (date && endDate && normalizeDate(date) > normalizeDate(endDate)) {
-            setEndDate(undefined)
+        if (date) {
+            date = normalizeDate(date);
+            if (endDate && date > normalizeDate(endDate)) {
+                setEndDate(undefined);
+            }
         }
-        setStartDate(date)
+        setStartDate(date);
     }
 
     const handleEndDateChange = (date: Date | undefined) => {
-        setEndDate(date)
+        if (date) {
+            date = normalizeDate(date);
+        }
+        setEndDate(date);
     }
 
     const updateTotalDays = (start: Date | undefined, end: Date | undefined) => {
@@ -247,7 +252,7 @@ export default function Component() {
                                     <Button variant="outline" className="flex-col items-start w-full h-auto">
                                         <span className="font-semibold uppercase text-[0.65rem]">Start</span>
                                         <span className="font-normal">
-                                            {startDate ? startDate.toLocaleDateString(undefined, { timeZone: 'UTC' }) : 'Select date'}
+                                            {startDate ? startDate.toLocaleDateString() : 'Select date'}
                                         </span>
                                     </Button>
                                 </PopoverTrigger>
@@ -310,34 +315,34 @@ export default function Component() {
                         (
                             <div className='flex flex-col gap-4 m-4'>
                                 <div className="flex gap-4">
-                                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button size="lg" variant="destructive" className="w-full">Delete Booking</Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogTitle>Confirm Deletion</DialogTitle>
-                                        <p>Are you sure you want to delete this booking?</p>
-                                        <DialogFooter>
-                                            <Button variant="outline" onClick={() => setDialogOpen(false)} className="w-full">No</Button>
-                                            <Button variant="destructive" onClick={handleDelete} className="w-full">Yes</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                                <Dialog open={rescheduleDialogOpen} onOpenChange={setRescheduleDialogOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button size="lg" className="w-full" disabled={isButtonDisabled}>
-                                            Reschedule
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogTitle>Confirm Reschedule</DialogTitle>
-                                        <p>Are you sure you want to reschedule this booking?</p>
-                                        <DialogFooter>
-                                            <Button variant="outline" onClick={() => setRescheduleDialogOpen(false)} className="w-full">No</Button>
-                                            <Button variant="destructive" onClick={handleReschedule} className="w-full">Yes</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
+                                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button size="lg" variant="destructive" className="w-full">Delete Booking</Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogTitle>Confirm Deletion</DialogTitle>
+                                            <p>Are you sure you want to delete this booking?</p>
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setDialogOpen(false)} className="w-full">No</Button>
+                                                <Button variant="destructive" onClick={handleDelete} className="w-full">Yes</Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Dialog open={rescheduleDialogOpen} onOpenChange={setRescheduleDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button size="lg" className="w-full" disabled={isButtonDisabled}>
+                                                Reschedule
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogTitle>Confirm Reschedule</DialogTitle>
+                                            <p>Are you sure you want to reschedule this booking?</p>
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setRescheduleDialogOpen(false)} className="w-full">No</Button>
+                                                <Button variant="destructive" onClick={handleReschedule} className="w-full">Yes</Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                                 </div>
                                 <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
                                     <DialogTrigger asChild>
