@@ -11,10 +11,10 @@ export const INITIAL_LINKS: Array<LinkType> = [
 ];
 
 export const FOOTER_LINKS: Array<LinkType> = [
-  {
-    name: "About us",
-    ref: "#",
-  },
+  // {
+  //   name: "About us",
+  //   ref: "#",
+  // },
   {
     name: "Contact us",
     ref: "/contact",
@@ -23,10 +23,10 @@ export const FOOTER_LINKS: Array<LinkType> = [
     name: "FAQ",
     ref: "/faq",
   },
-  {
-    name: "Terms of Service",
-    ref: "#",
-  },
+  // {
+  //   name: "Terms of Service",
+  //   ref: "#",
+  // },
 ];
 
 type FAQType = {

@@ -21,7 +21,6 @@ interface DecodedToken {
   lastName?: string;
   gymName?: string;
   type?: string;
-  id?: string;
 }
 
 export function ProfileDropdown() {

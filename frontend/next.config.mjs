@@ -6,5 +6,6 @@ const nextConfig = {
     images: {
         domains: ['images.pexels.com'],
     },
+    reactStrictMode: false
 };
 export default nextConfig;
