@@ -11,7 +11,6 @@ import express, { Request, Response, NextFunction } from 'express';
 import { MongoClient, ObjectId, Db, Collection } from 'mongodb';
 import dotenv from 'dotenv';
 
-
 const router = Router();
 
 // Get all gyms
@@ -31,7 +30,25 @@ router.post('/', async (req, res) => {
         name: req.body.name,
         location: req.body.location,
         amenities: req.body.amenities,
+        title: req.body.title,
+        tagline: '',
+        images: [],
+        hours: req.body.hours,
+        price: req.body.price,
+        ratings: {
+            totalRatings: 0,
+            count: 0
+        },
+        userId: req.body.userId
+
     };
+
+    if(req.body.tagline)
+        gym.tagline = req.body.tagline
+
+    if(req.body.images)
+        gym.images = req.body.images
+
 
     try {
         const db = getDB();
@@ -57,7 +74,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a gym
-router.patch('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const db = getDB();
         const gym = await db.collection('gyms').findOne({ _id: new ObjectId(req.params.id) });
@@ -85,6 +102,22 @@ router.delete('/:id', async (req, res) => {
         return res.status(404).json({ message: 'Cannot find gym' });
     }
     res.json({ message: 'Deleted Gym' });
+});
+
+// Get gyms by userId for gym owner
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        console.log("userId", userId);
+        const db = getDB();
+        const gyms = await db.collection('gyms').find({ userId: userId }).toArray();
+        if (!gyms) {
+            return res.status(404).json({ message: 'Cannot find gym' });
+        }
+        res.json(gyms);
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 interface Gym {
