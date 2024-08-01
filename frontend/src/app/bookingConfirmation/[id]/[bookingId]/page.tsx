@@ -18,6 +18,8 @@ import { CalendarIcon, StarIcon } from "lucide-react"
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import ProtectedRoute from '../../../../../Auth/ProtectedRoutes';
+import httpFetch from "@/lib/httpFetch"
+import { BOOKINGS_ENDPOINT, GET_GYM } from "@/Constants/EndPoints"
 
 const normalizeDate = (date: Date) => {
     const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -46,14 +48,14 @@ export default function Component() {
         const fetchData = async () => {
             try {
                 if (gymId) {
-                    const gymResponse = await fetch(`http://localhost:8080/api/gyms/${gymId}`);
+                    const gymResponse = await httpFetch(`${GET_GYM}/${gymId}`);
                     const gymData = await gymResponse.json();
                     setGymDetails(gymData);
                     setTotalPrice(gymData.price); // Set initial price
                 }
 
                 if (bookingId && bookingId !== 'new') {
-                    const bookingResponse = await fetch(`http://localhost:8080/api/bookings/${bookingId}`);
+                    const bookingResponse = await httpFetch(`${BOOKINGS_ENDPOINT}/${bookingId}`);
                     const bookingData = await bookingResponse.json();
                     setStartDate(normalizeDate(new Date(bookingData.startDate)));
                     setEndDate(normalizeDate(new Date(bookingData.endDate)));
@@ -114,7 +116,7 @@ export default function Component() {
     const handleDelete = async () => {
         try {
             if (bookingId) {
-                await fetch(`http://localhost:8080/api/bookings/${bookingId}`, {
+                await httpFetch(`${BOOKINGS_ENDPOINT}/${bookingId}`, {
                     method: 'DELETE',
                 });
                 // Handle any UI updates or redirections here
@@ -149,7 +151,7 @@ export default function Component() {
                     charges: totalPrice
                 };
 
-                await fetch(`http://localhost:8080/api/bookings/${bookingId}`, {
+                await httpFetch(`${BOOKINGS_ENDPOINT}/${bookingId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

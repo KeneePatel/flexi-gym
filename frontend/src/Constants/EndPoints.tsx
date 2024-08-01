@@ -7,3 +7,4 @@ export const RESETPW_URL = `${AUTH_URL}/api/auth/resetpassword`;
 export const PROFILE_URL = `${AUTH_URL}/profile`;
 export const GET_GYM = `${BASE_URL}/api/gyms`;
 export const GET_REVIEWS = `${BASE_URL}/api/reviews`;
+export const BOOKINGS_ENDPOINT = `${BASE_URL}/api/bookings`;

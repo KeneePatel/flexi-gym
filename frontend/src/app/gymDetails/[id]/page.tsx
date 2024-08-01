@@ -53,7 +53,7 @@ export default function Component() {
     const [gymDetails, setGymDetails] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [page, setPage] = useState(1);
-    const [limit] = useState(2);
+    const [limit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [editingReview, setEditingReview] = useState(null);
@@ -109,7 +109,7 @@ export default function Component() {
     const handleAddReview = async () => {
         try {
             const username = user.firstName + " "+ user.lastName;
-            const response = await fetch("http://localhost:8080/api/reviews", {
+            const response = await httpFetch(GET_REVIEWS, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -136,8 +136,8 @@ export default function Component() {
     const handleEditReview = async () => {
         try {
             console.log("handle edit", editingReview);
-            const response = await fetch(
-                `http://localhost:8080/api/reviews/${editingReview._id}`,
+            const response = await httpFetch(
+                `${GET_REVIEWS}/${editingReview._id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -161,8 +161,8 @@ export default function Component() {
 
     const handleDeleteReview = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:8080/api/reviews/${deleteReviewId}`,
+            const response = await httpFetch(
+                `${GET_REVIEWS}/${deleteReviewId}`,
                 {
                     method: "DELETE",
                 }

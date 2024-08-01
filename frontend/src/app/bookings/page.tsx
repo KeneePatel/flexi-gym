@@ -12,6 +12,12 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '../../../Auth/ProtectedRoutes';
 import { getProfileData } from '../../../Auth/AuthService';
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { StarIcon } from "lucide-react";
+import httpFetch from '@/lib/httpFetch';
+import { GET_REVIEWS } from '@/Constants/EndPoints';
 
 interface Booking {
   startDate: string;
@@ -29,6 +35,9 @@ export default function Component() {
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
   const router = useRouter();
   const user = getProfileData();
+  const [feedback, setFeedback] = useState({ rating: 0, comment: "" });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   useEffect(() => {
   console.log("userData", user);
 
@@ -69,6 +78,38 @@ export default function Component() {
   const handleUpdate = (bookingId: string, gymId: string) => {
     router.push(`/bookingConfirmation/${gymId}/${bookingId}`);
   }
+
+  const handleFeedbackSubmit = async () => {
+    if (!selectedBooking) return;
+
+    try {
+      const response = await httpFetch(GET_REVIEWS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...feedback,
+          gymid: selectedBooking.gym._id,
+          username: user.firstName + " " + user.lastName,
+          userid: user.id,
+          updatedDate: new Date().toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        setIsDialogOpen(false);
+        setFeedback({ rating: 0, comment: "" });
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+    }
+  };
+
+  const handleRate = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsDialogOpen(true);
+  };
 
   return (
       <ProtectedRoute>
@@ -111,7 +152,7 @@ export default function Component() {
                   <p className="font-medium">{formatCharges(booking.charges)}</p>
                 </div>
                 <div className="flex items-center justify-end">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleRate(booking)}>
                     Rate
                   </Button>
                 </div>
@@ -120,6 +161,29 @@ export default function Component() {
           </div>
         </div>
       </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <h2 className="text-xl font-bold mb-4">Submit Feedback</h2>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <StarIcon
+                    key={index}
+                    className={`w-6 h-6 cursor-pointer ${index < feedback.rating ? "fill-primary" : "fill-muted stroke-muted-foreground"}`}
+                    onClick={() => setFeedback((prev) => ({ ...prev, rating: index + 1 }))}
+                  />
+                ))}
+              </div>
+              <Label htmlFor="comment">Comment</Label>
+              <Input
+                id="comment"
+                value={feedback.comment}
+                onChange={(e) => setFeedback((prev) => ({ ...prev, comment: e.target.value }))}
+              />
+              <Button onClick={handleFeedbackSubmit}>Submit Feedback</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
     </div>
       </ProtectedRoute>
   );

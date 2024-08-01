@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StarIcon } from 'lucide-react';
 import ProtectedRoute from '../../../Auth/ProtectedRoutes';
+import { GET_GYM } from '@/Constants/EndPoints';
 
 export default function GymList() {
   const [gyms, setGyms] = useState([]);
@@ -13,7 +14,7 @@ export default function GymList() {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/gyms');
+        const response = await fetch(GET_GYM);
         if (!response.ok) {
           throw new Error('Failed to fetch gyms');
         }
