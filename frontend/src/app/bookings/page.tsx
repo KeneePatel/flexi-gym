@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '../../../Auth/ProtectedRoutes';
+import { getProfileData } from '../../../Auth/AuthService';
 
 interface Booking {
   startDate: string;
@@ -27,11 +28,13 @@ export default function Component() {
   const [currentBookings, setCurrentBookings] = useState<Booking[]>([]);
   const [pastBookings, setPastBookings] = useState<Booking[]>([]);
   const router = useRouter();
-
+  const user = getProfileData();
   useEffect(() => {
+  console.log("userData", user);
+
     const fetchBookings = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/66a8129ffa48505c5ed80597`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/user/${user.id}`);
         const data = await response.json();
 
         const now = new Date();
@@ -100,8 +103,8 @@ export default function Component() {
             {pastBookings && pastBookings.map((booking, index) => (
               <Card key={index} className="grid grid-cols-[1fr_120px] gap-6 px-4 py-4">
                 <div className="grid gap-2">
-                  <h3 className="text-lg font-semibold">{booking.gymName}</h3>
-                  <p className="text-muted-foreground">{booking.gymLocation}</p>
+                  <h3 className="text-lg font-semibold">{booking.gym.name}</h3>
+                  <p className="text-muted-foreground">{formatLocation(booking.gym.location)}</p>
                   <p className="text-muted-foreground">
                     {formatDate(booking.startDate)} - {formatDate(booking.endDate)}
                   </p>
