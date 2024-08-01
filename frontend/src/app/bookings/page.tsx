@@ -23,8 +23,6 @@ interface Booking {
   startDate: string;
   endDate: string;
   charges: number | string;
-  gymName: string;
-  gymLocation: string;
   _id: string;
   gymId: string;
   gym: any;

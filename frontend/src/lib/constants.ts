@@ -6,7 +6,7 @@ export type LinkType = {
 export const INITIAL_LINKS: Array<LinkType> = [
   {
     name: "Explore",
-    ref: "gym_search",
+    ref: "/gym_search",
   },
 ];
 
