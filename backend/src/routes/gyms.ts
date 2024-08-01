@@ -11,7 +11,6 @@ import express, { Request, Response, NextFunction } from 'express';
 import { MongoClient, ObjectId, Db, Collection } from 'mongodb';
 import dotenv from 'dotenv';
 
-
 const router = Router();
 
 // Get all gyms
@@ -85,6 +84,22 @@ router.delete('/:id', async (req, res) => {
         return res.status(404).json({ message: 'Cannot find gym' });
     }
     res.json({ message: 'Deleted Gym' });
+});
+
+// Get gyms by userId for gym owner
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        console.log("userId", userId);
+        const db = getDB();
+        const gyms = await db.collection('gyms').find({ userId: userId }).toArray();
+        if (!gyms) {
+            return res.status(404).json({ message: 'Cannot find gym' });
+        }
+        res.json(gyms);
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 interface Gym {
