@@ -30,7 +30,25 @@ router.post('/', async (req, res) => {
         name: req.body.name,
         location: req.body.location,
         amenities: req.body.amenities,
+        title: req.body.title,
+        tagline: '',
+        images: [],
+        hours: req.body.hours,
+        price: req.body.price,
+        ratings: {
+            totalRatings: 0,
+            count: 0
+        },
+        userId: req.body.userId
+
     };
+
+    if(req.body.tagline)
+        gym.tagline = req.body.tagline
+
+    if(req.body.images)
+        gym.images = req.body.images
+
 
     try {
         const db = getDB();
@@ -56,7 +74,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a gym
-router.patch('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const db = getDB();
         const gym = await db.collection('gyms').findOne({ _id: new ObjectId(req.params.id) });
