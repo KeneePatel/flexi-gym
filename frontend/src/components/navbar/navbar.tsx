@@ -3,12 +3,11 @@ import { Button } from "@/components/ui/button";
 import { INITIAL_LINKS } from "@/lib/constants";
 import Link from "next/link";
 import Logo from "../logo/logo";
-import { Search } from "lucide-react";
-import { Input } from "../ui/input";
 import { ProfileDropdown } from "../profile-dropdown/profile-dropdown";
 import { ThemeToggler } from "../theme-toggler";
 import { AuthContext } from "../../../Auth/AuthContext";
 import React, { useContext } from "react";
+import MobileNav from "./mobile-nav";
 
 export default function NavBar() {
   const context = useContext(AuthContext);
@@ -27,7 +26,7 @@ export default function NavBar() {
           <nav className="hidden md:flex items-center text-sm font-medium">
             {INITIAL_LINKS.map((link, index) => {
               return (
-                <Link key={index} href="#" prefetch={false}>
+                <Link key={index} href={link.ref} prefetch={false}>
                   <Button variant="link" className="px-2">
                     {link.name}
                   </Button>
@@ -35,8 +34,12 @@ export default function NavBar() {
               );
             })}
           </nav>
-          <div className="flex gap-2">
+          <div className="hidden gap-2 md:flex">
             <ProfileDropdown />
+            <ThemeToggler />
+          </div>
+          <div className="flex gap-2 md:hidden">
+            <MobileNav />
             <ThemeToggler />
           </div>
         </div>

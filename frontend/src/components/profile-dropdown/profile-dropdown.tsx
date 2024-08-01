@@ -70,13 +70,13 @@ export function ProfileDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <Link href={`/profile/${profileData?.id}`} prefetch={false}>
-          <DropdownMenuItem className="gap-2">
+          <DropdownMenuItem className="gap-2 hover:cursor-pointer">
             <UserIcon className="w-4 h-4" />
             Profile
           </DropdownMenuItem>
         </Link>
         <Link href="/bookings" prefetch={false}>
-          <DropdownMenuItem className="gap-2">
+          <DropdownMenuItem className="gap-2 hover:cursor-pointer">
             <CalendarIcon className="w-4 h-4" />
             Bookings
           </DropdownMenuItem>
