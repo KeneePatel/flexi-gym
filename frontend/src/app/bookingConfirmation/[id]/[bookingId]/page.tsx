@@ -17,6 +17,7 @@ import Autoplay from "embla-carousel-autoplay"
 import { CalendarIcon, StarIcon } from "lucide-react"
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import ProtectedRoute from '../../../../../Auth/ProtectedRoutes';
 
 const normalizeDate = (date: Date) => {
     const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -204,6 +205,7 @@ export default function Component() {
     const averageRating = (totalRatings / ratingCount).toFixed(1);
 
     return (
+        <ProtectedRoute>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Card className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-start">
                 <div className="relative overflow-hidden rounded-lg m-2">
@@ -372,5 +374,6 @@ export default function Component() {
                 </div>
             </Card>
         </div>
+        </ProtectedRoute>
     )
 }

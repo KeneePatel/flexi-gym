@@ -15,6 +15,7 @@ import axios from 'axios';
 import React, { useState, ChangeEvent, FormEvent,useContext } from 'react';
 import { AuthContext } from '../../../Auth/AuthContext';
 import {useRouter} from "next/navigation";
+import {getProfileData} from '../../../Auth/AuthService';
 import {LOGIN_URL, REGISTRATION_URL} from "@/Constants/EndPoints";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -71,7 +72,13 @@ export default function LoginPage() {
           position: "bottom-right"
         });
         authenticate(response.data.token);
-        router.push('/profile');
+        const user = getProfileData();
+        if(user?.type == 'user'){
+          router.push(`/gym_search`);
+        }
+        if(user?.type == 'gym'){
+          router.push(`/gymOwnerDashboard`);
+        }
         setLoginFormValidation('');
       } else {
         setLoginFormValidation(response.data.message);

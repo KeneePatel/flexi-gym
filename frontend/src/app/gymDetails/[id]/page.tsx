@@ -40,6 +40,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ProtectedRoute from '../../../../Auth/ProtectedRoutes';
 
 export default function Component() {
     const params = useParams();
@@ -216,6 +217,7 @@ export default function Component() {
     };
 
     return (
+        <ProtectedRoute>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-2 gap-8">
                 <div>
@@ -467,5 +469,6 @@ export default function Component() {
                 </DialogContent>
             </Dialog>
         </div>
+        </ProtectedRoute>
     );
 }

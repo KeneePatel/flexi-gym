@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StarIcon } from 'lucide-react';
+import ProtectedRoute from '../../../Auth/ProtectedRoutes';
 
 export default function GymList() {
   const [gyms, setGyms] = useState([]);
@@ -37,6 +38,7 @@ export default function GymList() {
   }
 
   return (
+      <ProtectedRoute>
     <section className="grid grid-cols-1 gap-6 p-4 md:grid-cols-2 lg:grid-cols-3 lg:p-6">
       {gyms.map((gym) => (
         <div
@@ -66,5 +68,6 @@ export default function GymList() {
         </div>
       ))}
     </section>
+      </ProtectedRoute>
   );
 }
