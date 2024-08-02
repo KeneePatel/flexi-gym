@@ -10,6 +10,14 @@ export const INITIAL_LINKS: Array<LinkType> = [
   },
 ];
 
+export const GYMOWNER_LINKS: Array<LinkType> = [
+  {
+    name: "Add Gym",
+    ref: "/creategym",
+  },
+];
+
+
 export const FOOTER_LINKS: Array<LinkType> = [
   // {
   //   name: "About us",
