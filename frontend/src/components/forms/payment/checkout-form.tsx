@@ -19,6 +19,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { CreditCardIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const givePaymentErrorToast = () => {
@@ -41,6 +42,7 @@ export const CheckoutForm: React.FC = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState<boolean>(false);
+  const router = useRouter();
 
   const paymentService = new PaymentService();
 
@@ -63,7 +65,7 @@ export const CheckoutForm: React.FC = () => {
         givePaymentErrorToast();
       } else {
         givePaymentSuccessToast();
-        console.log("Payment succeeded:", result.paymentIntent);
+        router.push("/");
       }
     } catch (error) {
       console.error(error);
