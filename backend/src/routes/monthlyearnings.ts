@@ -20,7 +20,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
     bookings.forEach(booking => {
       const month = new Date(booking.startDate).getMonth();
-      const charges = parseFloat(booking.charges.replace('$', ''));
+      const charges = booking.charges;
       monthlyEarnings[month] += charges;
     });
 

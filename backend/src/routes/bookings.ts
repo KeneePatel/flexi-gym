@@ -14,8 +14,8 @@ interface Booking {
     _id: ObjectId;
     userId: string;
     gymId: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: string; 
+    endDate: string; 
     charges: number;
     gym: any;
 }
@@ -43,6 +43,7 @@ const initializeCollections = () => {
     database = getDB();
     bookingsCollection = database.collection<Booking>('bookings');
     gymsCollection = database.collection<Gym>('gyms');
+    console.log("Collections initialized");
 };
 
 router.get('/user/:userId', async (req: Request, res: Response, next: NextFunction) => {
@@ -66,6 +67,10 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
             .limit(limit)
             .toArray();
 
+        if (bookings.length === 0) {
+            console.log("No bookings found for user:", userId);
+        }
+
         const bookingsWithGymDetails = await Promise.all(
             bookings.map(async (booking) => {
                 const gym = await gymsCollection.findOne({ _id: new ObjectId(booking.gymId) });
@@ -73,8 +78,8 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
                 return {
                     _id: booking._id,
                     userId: booking.userId,
-                    startDate: booking.startDate.toISOString().split('T')[0], // Format startDate
-                    endDate: booking.endDate.toISOString().split('T')[0], // Format endDate
+                    startDate: booking.startDate, // Already a string
+                    endDate: booking.endDate, // Already a string
                     charges: booking.charges,
                     gym: gym ? gym : null
                 };
@@ -92,7 +97,7 @@ router.get('/user/:userId', async (req: Request, res: Response, next: NextFuncti
             items: bookingsWithGymDetails,
         });
     } catch (error) {
-        console.log(`error caught in bookings: ${error}`);
+        console.error(`Error caught in bookings: ${error}`);
         next(error);
     }
 });
@@ -118,8 +123,8 @@ router.get('/:bookingId', async (req: Request, res: Response, next: NextFunction
         res.json({
             _id: booking._id,
             userId: booking.userId,
-            startDate: booking.startDate.toISOString().split('T')[0], // Format startDate
-            endDate: booking.endDate.toISOString().split('T')[0], // Format endDate
+            startDate: booking.startDate, // Already a string
+            endDate: booking.endDate, // Already a string
             charges: booking.charges,
             gym: gym ? gym : null
         });
@@ -168,8 +173,8 @@ router.put('/:bookingId', async (req: Request, res: Response, next: NextFunction
 
     try {
         const updatedBooking = {
-            startDate: new Date(startDate), // Parse date string
-            endDate: new Date(endDate), // Parse date string
+            startDate: startDate, // Keep as string
+            endDate: endDate, // Keep as string
             charges: Number(charges)
         };
 

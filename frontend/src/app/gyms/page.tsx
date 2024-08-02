@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { StarIcon } from 'lucide-react';
+import ProtectedRoute from '../../../Auth/ProtectedRoutes';
+import { GET_GYM } from '@/Constants/EndPoints';
 
 export default function GymList() {
   const [gyms, setGyms] = useState([]);
@@ -12,7 +14,7 @@ export default function GymList() {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/gyms');
+        const response = await fetch(GET_GYM);
         if (!response.ok) {
           throw new Error('Failed to fetch gyms');
         }
@@ -37,6 +39,7 @@ export default function GymList() {
   }
 
   return (
+      <ProtectedRoute>
     <section className="grid grid-cols-1 gap-6 p-4 md:grid-cols-2 lg:grid-cols-3 lg:p-6">
       {gyms.map((gym) => (
         <div
@@ -66,5 +69,6 @@ export default function GymList() {
         </div>
       ))}
     </section>
+      </ProtectedRoute>
   );
 }

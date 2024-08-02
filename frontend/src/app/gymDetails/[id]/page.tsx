@@ -40,27 +40,31 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ProtectedRoute from '../../../../Auth/ProtectedRoutes';
+import { getProfileData } from "../../../../Auth/AuthService";
+import httpFetch from "@/lib/httpFetch";
+import { GET_GYM, GET_REVIEWS } from "@/Constants/EndPoints";
 
 export default function Component() {
     const params = useParams();
     const router = useRouter();
     const gymId = params.id;
-
+    const user = getProfileData();
     const [gymDetails, setGymDetails] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [page, setPage] = useState(1);
-    const [limit] = useState(2);
+    const [limit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [editingReview, setEditingReview] = useState(null);
-    const [newReview, setNewReview] = useState({ rating: 0, comment: "", username: "Harsh Mehta", userid: '66a576c7d989398aea3ba6af' });
+    const [newReview, setNewReview] = useState({ rating: 0, comment: "", username: "", userid: "" });
     const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: true }));
     const [deleteReviewId, setDeleteReviewId] = useState(null);
     useEffect(() => {
         if (gymId) {
             const fetchGymDetails = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/api/gyms/${gymId}`);
+                    const response = await httpFetch(`${GET_GYM}/${gymId}`);
                     const data = await response.json();
                     setGymDetails(data);
                 } catch (error) {
@@ -73,11 +77,13 @@ export default function Component() {
     }, [reviews]);
 
     useEffect(() => {
+        console.log("userData", user);
+
         if (gymId) {
             const fetchReviews = async () => {
                 try {
-                    const reviewsResponse = await fetch(
-                        `http://localhost:8080/api/reviews/${gymId}?page=${page}&limit=${limit}`
+                    const reviewsResponse = await httpFetch(
+                        `${GET_REVIEWS}/${gymId}?page=${page}&limit=${limit}`
                     );
                     const reviewsData = await reviewsResponse.json();
                     setReviews((prevReviews) => [
@@ -102,7 +108,8 @@ export default function Component() {
 
     const handleAddReview = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/reviews", {
+            const username = user.firstName + " "+ user.lastName;
+            const response = await httpFetch(GET_REVIEWS, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -110,14 +117,16 @@ export default function Component() {
                 body: JSON.stringify({
                     ...newReview,
                     gymid: gymId,
-                    username: "Harsh Mehta",
-                    userid: '66a576c7d989398aea3ba6af',
+                    username: username,
+                    userid: user.id,
                     updatedDate: new Date().toISOString(),
                 }),
             });
+            newReview.username = username;
+            newReview.userid = user.id;
             if (response.ok) {
                 setReviews((prevReviews) => [newReview, ...prevReviews]);
-                setNewReview({ rating: 0, comment: "" });
+                setNewReview({ rating: 0, comment: "", username: user.firstName + " "+ user.lastName, userid: user.id });
             }
         } catch (error) {
             console.error("Error adding review:", error);
@@ -126,8 +135,9 @@ export default function Component() {
 
     const handleEditReview = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:8080/api/reviews/${editingReview._id}`,
+            console.log("handle edit", editingReview);
+            const response = await httpFetch(
+                `${GET_REVIEWS}/${editingReview._id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -151,8 +161,8 @@ export default function Component() {
 
     const handleDeleteReview = async () => {
         try {
-            const response = await fetch(
-                `http://localhost:8080/api/reviews/${deleteReviewId}`,
+            const response = await httpFetch(
+                `${GET_REVIEWS}/${deleteReviewId}`,
                 {
                     method: "DELETE",
                 }
@@ -216,6 +226,7 @@ export default function Component() {
     };
 
     return (
+        <ProtectedRoute>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-2 gap-8">
                 <div>
@@ -329,7 +340,7 @@ export default function Component() {
                         {reviews.map((review) => (
                             <div key={review._id} className="border p-4 rounded-lg relative">
                                 <div className="absolute top-2 right-2 flex gap-2">
-                                    {/* {review.userid === newReview.userid && ( */}
+                                    {review.userid === user.id && review._id &&(
                                         <>
                                             <Button
                                                 variant="ghost"
@@ -346,7 +357,7 @@ export default function Component() {
                                                 <TrashIcon className="h-4 w-4" />
                                             </Button>
                                         </>
-                                    {/* )} */}
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Avatar className="border">
@@ -467,5 +478,6 @@ export default function Component() {
                 </DialogContent>
             </Dialog>
         </div>
+        </ProtectedRoute>
     );
 }

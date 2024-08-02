@@ -6,6 +6,7 @@ import { Line } from "react-chartjs-2";
 import {getProfileData} from "../../../Auth/AuthService";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ProtectedRoute from '../../../Auth/ProtectedRoutes';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -133,6 +134,7 @@ const Dashboard = () => {
   };
 
   return (
+      <ProtectedRoute>
     <div className="min-h-screen bg-primary-foreground p-6">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold text-secondary-foreground">Gym Owner Dashboard</h1>
@@ -201,6 +203,7 @@ const Dashboard = () => {
         </TabsContent>
       </Tabs>
     </div>
+      </ProtectedRoute>
   );
 };
 

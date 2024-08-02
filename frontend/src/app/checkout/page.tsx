@@ -11,9 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import ProtectedRoute from '../../../Auth/ProtectedRoutes';
 
 export default function CheckoutPage() {
+
   return (
+      <ProtectedRoute>
     <div className="max-w-4xl mx-auto p-6 md:p-10">
       <div className="grid md:grid-cols-2 gap-8">
         <div>
@@ -64,5 +67,6 @@ export default function CheckoutPage() {
         </Card>
       </div>
     </div>
+  </ProtectedRoute>
   );
 }

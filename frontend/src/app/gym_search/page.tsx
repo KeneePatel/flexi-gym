@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import axios from 'axios';
+import { StarIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-
+import Link from "next/link";
 
 type sortOptionType = "Our top picks" | "Price (lowest first)" | "Best reviewed" | "Property rating (high to low)"
 
@@ -84,25 +85,31 @@ const SearchGyms = () => {
       <div div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
         
         {gyms.length > 0 ? gyms.map(gym => (
-          <Card key={gym._id} style={{ width: '18rem' }}>
-            <CardHeader>
-              <CardTitle>{gym.name}</CardTitle>
-              <CardDescription>
-                Ratings: {gym.ratings?.totalRatings || 'No'} stars ({gym.ratings?.count || 'no'} reviews)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Image 
-                src ={gym.images && gym.images[0]} alt={`${gym.name} image`}
-                width={800}
-                height={700} 
-              />
-              <p>{gym.about}</p>
-            </CardContent>
-            <CardFooter>
-              <p>Price: ${gym.price}</p>
-            </CardFooter>
-          </Card>
+          <div
+          key={gym._id}
+          className="relative overflow-hidden transition-transform duration-300 ease-in-out rounded-lg shadow-lg group hover:shadow-xl hover:-translate-y-2"
+        >
+          <Link href={`/gymDetails/${gym._id}`} className="absolute inset-0 z-10" prefetch={false}>
+            <span className="sr-only">View</span>
+          </Link>
+          <img src={gym.images[0]} alt={gym.name} width={400} height={300} className="object-cover w-full h-64" />
+          <div className="p-4 bg-background">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold">{gym.name}</h3>
+              <div className="flex items-center gap-1 text-sm font-medium text-primary">
+                <StarIcon className="w-4 h-4 fill-primary" />
+                {(gym.ratings.totalRatings / gym.ratings.count).toFixed(1)}
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">{gym.location.street}, {gym.location.city}</p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-lg font-semibold">${gym.price}/day</p>
+              <Button variant="outline" size="sm">
+                Join Now
+              </Button>
+            </div>
+          </div>
+        </div>
         )) : <p>No gyms found</p>}
       </div>
     </div>
