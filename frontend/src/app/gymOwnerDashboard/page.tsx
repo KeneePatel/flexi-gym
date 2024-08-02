@@ -63,13 +63,15 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [bookingsRes, earningsRes, usersRes, monthEarnRes, monthBookRes] =
+        const [bookingsRes, earningsRes, usersRes, monthEarnRes, monthBookRes, getGym] =
           await Promise.all([
             fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookings/" + id),
             fetch(process.env.NEXT_PUBLIC_API_URL + "/totalEarnings/" + id),
             fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookedUsers/" + id),
             fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyEarnings/" + id),
             fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyBookings/" + id),
+            fetch(process.env.NEXT_PUBLIC_API_URL +  "/api/gyms/user/" + id),
+
           ]);
 
         const bookingsData = await bookingsRes.json();
@@ -77,6 +79,8 @@ const Dashboard = () => {
         const usersData = await usersRes.json();
         const monthlyEarningData = await monthEarnRes.json();
         const monthlyBookData = await monthBookRes.json();
+        const FetchGyms = await getGym.json();
+          console.log(FetchGyms);
 
         setBookings(bookingsData);
         setEarnings(earningsData);
