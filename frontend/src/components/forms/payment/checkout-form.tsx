@@ -38,7 +38,21 @@ const givePaymentSuccessToast = () => {
   });
 };
 
-export const CheckoutForm: React.FC = () => {
+type CheckoutFormProps = {
+  userId: string;
+  gymId: string;
+  startDate: Date;
+  endDate: Date;
+  charges: number;
+};
+
+export const CheckoutForm: React.FC<CheckoutFormProps> = ({
+  userId,
+  gymId,
+  startDate,
+  endDate,
+  charges,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState<boolean>(false);
@@ -65,6 +79,13 @@ export const CheckoutForm: React.FC = () => {
         givePaymentErrorToast();
       } else {
         givePaymentSuccessToast();
+        console.log({
+          userId,
+          gymId,
+          startDate,
+          endDate,
+          charges,
+        });
         router.push("/");
       }
     } catch (error) {
