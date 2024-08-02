@@ -6,6 +6,8 @@ import { Line } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProtectedRoute from '../../../Auth/ProtectedRoutes';
+import {getProfileData} from '../../../Auth/AuthService';
+
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -23,9 +25,13 @@ interface PopularClass {
   count: number;
 }
 
+
 interface User {
   _id: string;
-  fullName: string;
+  id: any;
+  gymName: any;
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
@@ -38,15 +44,18 @@ const Dashboard = () => {
   const [earnings, setEarnings] = useState<number>(0);
   const [users, setUsers] = useState<User[]>([]);
 
+  const user = getProfileData() as User | undefined;
+  const id = user?.id;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [bookingsRes, earningsRes, usersRes, monthEarnRes, monthBookRes] = await Promise.all([
-          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookings/66a576c7d989398aea3ba6af"),
-          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalEarnings/66a576c7d989398aea3ba6af"),
-          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookedUsers/66a576c7d989398aea3ba6af"),
-          fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyEarnings/66a576c7d989398aea3ba6af"),
-          fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyBookings/66a576c7d989398aea3ba6af")
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookings/" + id),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalEarnings/" + id),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookedUsers/" + id),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyEarnings/" + id),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyBookings/" + id)
         ]);
 
         const bookingsData = await bookingsRes.json();
@@ -72,8 +81,6 @@ const Dashboard = () => {
     return <div>Loading...</div>;
   }
 
-  console.log(monthlyBookings);
-  console.log(monthlyEarnings);
 
   const earningsChartData = {
     labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -119,7 +126,7 @@ const Dashboard = () => {
       <ProtectedRoute>
     <div className="min-h-screen bg-primary-foreground p-6">
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-secondary-foreground">Gym Owner Dashboard</h1>
+        <h1 className="text-4xl font-bold text-secondary-foreground">{user?.gymName} Dashboard</h1>
         <h2 className="text-2xl mt-2 text-secondary-foreground">Overview</h2>
       </header>
 
@@ -147,9 +154,9 @@ const Dashboard = () => {
             <CardTitle>New Bookings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 ">
-            {users.map((user) => (
+            {users?.map((user) => (
               <div key={user._id} className="mb-4 hover:bg-secondary p-2 rounded-lg">
-                <p className="text-md ">{user.fullName} - {user.email}</p>
+                <p className="text-md ">{user?.firstName} {user?.lastName}</p>
               </div>
             ))}
           </CardContent>
