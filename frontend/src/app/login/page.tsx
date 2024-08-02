@@ -10,12 +10,12 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {getProfileData} from "../../../Auth/AuthService";
 import Link from "next/link";
 import axios from 'axios';
-import React, { useState, ChangeEvent, FormEvent,useContext, useEffect } from 'react';
+import React, { useState, ChangeEvent, FormEvent,useContext } from 'react';
 import { AuthContext } from '../../../Auth/AuthContext';
 import {useRouter} from "next/navigation";
+import {getProfileData} from '../../../Auth/AuthService';
 import {LOGIN_URL, REGISTRATION_URL} from "@/Constants/EndPoints";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,37 +40,6 @@ export default function LoginPage() {
 
   const [profileType, setProfileType] = useState<string>('user');
   const [activeTab, setActiveTab] = useState<string>('login');
-
-  const [profileData, setProfileData] = useState<DecodedToken | null>(null);
-  const userProfile = getProfileData();
-  console.log(profileData?.type);
-
-  useEffect(() => {
-
-      
-    if (userProfile) {
-      try {
-        // @ts-ignore
-        setProfileData(userProfile);
-
-        if(userProfile.type=="gym")
-          {
-            router.push('/gymOwnerDashboard');
-          }
-    
-          if(userProfile.type=="user")
-            {
-            router.push('/gym_search');
-    
-          }
-
-      } catch (error) {
-        console.error('Token decoding failed:', error);
-      }
-
-    }
-
-  }, []);
 
   //Method to check validation on Login Form.
   const loginHandler = async (e: FormEvent) => {
