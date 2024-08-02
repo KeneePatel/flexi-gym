@@ -47,13 +47,27 @@ export default function LoginPage() {
 
   useEffect(() => {
 
+      
     if (userProfile) {
       try {
         // @ts-ignore
         setProfileData(userProfile);
+
+        if(userProfile.type=="gym")
+          {
+            router.push('/gymOwnerDashboard');
+          }
+    
+          if(userProfile.type=="user")
+            {
+            router.push('/gym_search');
+    
+          }
+
       } catch (error) {
         console.error('Token decoding failed:', error);
       }
+
     }
 
   }, []);
