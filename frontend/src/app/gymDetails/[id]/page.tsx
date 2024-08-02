@@ -340,7 +340,7 @@ export default function Component() {
                         {reviews.map((review) => (
                             <div key={review._id} className="border p-4 rounded-lg relative">
                                 <div className="absolute top-2 right-2 flex gap-2">
-                                    {review.userid === user.id && review._id &&(
+                                    {review.userid === user?.id && review._id &&(
                                         <>
                                             <Button
                                                 variant="ghost"
