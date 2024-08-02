@@ -8,10 +8,15 @@ router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const db = getDB();
-    const gym = await db.collection('gyms').findOne({ _id: new ObjectId(id) });
+    const gym = await db.collection('userprofiles').findOne({ _id: new ObjectId(id) });
 
     if (!gym) {
-      return res.status(404).json({ message: 'Cannot find gym' });
+      const gym1 = await db.collection('gyms').findOne({ _id: new ObjectId(id) });
+      if(!gym1)
+      {
+        return res.status(404).json({ message: 'Cannot find gym' });
+
+      }
     }
 
     const bookings = await db.collection('bookings').find({ gymId: id }).toArray();
