@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { PaymentService } from "@/services/payment-service";
+import {
+  CreateBookingRequest,
+  PaymentService,
+} from "@/services/payment-service";
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -60,6 +63,8 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   const paymentService = new PaymentService();
 
+  const handleCreateBooking = async () => {};
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!stripe || !elements) return;
@@ -67,8 +72,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setProcessing(true);
 
     try {
-      const clientSecret =
-        await paymentService.createPaymentIntent("booking_123");
+      const clientSecret = await paymentService.createPaymentIntent(charges);
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardNumberElement)!,
@@ -77,17 +81,25 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
       if (result.error) {
         givePaymentErrorToast();
-      } else {
-        givePaymentSuccessToast();
-        console.log({
-          userId,
-          gymId,
-          startDate,
-          endDate,
-          charges,
-        });
-        router.push("/");
       }
+      givePaymentSuccessToast();
+      console.log({
+        userId: userId,
+        gymId: gymId,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        charges: charges,
+      });
+
+      const newBooking: CreateBookingRequest = {
+        userId: userId,
+        gymId: gymId,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        charges: charges,
+      };
+      paymentService.createBooking(newBooking);
+      router.push("/");
     } catch (error) {
       console.error(error);
       givePaymentErrorToast();

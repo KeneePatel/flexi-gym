@@ -26,11 +26,11 @@ export default function CheckoutPage() {
   const userId = userIdParam?.id ? userIdParam.id : NaN;
 
   const isValid =
+    !isUndefined(userId) &&
     !isUndefined(gymId) &&
     !isNaN(charges) &&
     !isNaN(startDate.getTime()) &&
-    !isNaN(endDate.getTime()) &&
-    !isUndefined(userId);
+    !isNaN(endDate.getTime());
 
   if (!isValid) {
     console.log({ userId, gymId, startDate, endDate, charges });
@@ -38,69 +38,67 @@ export default function CheckoutPage() {
   }
 
   return (
-    <Suspense>
-      <ProtectedRoute>
-        <div className="max-w-4xl mx-auto p-6 md:p-10">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Gym Membership</CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <div className="grid gap-1">
-                    <Label>Gym ID</Label>
-                    <div className="text-muted-foreground">{gymId}</div>
-                  </div>
-                  <div className="grid gap-1">
-                    <Label>Start Date</Label>
-                    <div className="text-muted-foreground">
-                      {new Date(startDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                  <div className="grid gap-1">
-                    <Label>End Date</Label>
-                    <div className="text-muted-foreground">
-                      {new Date(endDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                  <div className="grid gap-1">
-                    <Label>Total</Label>
-                    <div className="text-2xl font-bold">{`$${charges}`}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <div>
-              <StripeWrapper
-                userId={userId}
-                startDate={startDate}
-                endDate={endDate}
-                gymId={gymId}
-                charges={charges}
-              />
-            </div>
-          </div>
-          <div className="mt-8">
+    <ProtectedRoute>
+      <div className="max-w-4xl mx-auto p-6 md:p-10">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
             <Card>
               <CardHeader>
-                <CardTitle>Purchase Summary</CardTitle>
+                <CardTitle>Gym Membership</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <div>Gym Membership</div>
-                  <div className="font-medium">{`$${charges}`}</div>
+                <div className="grid gap-1">
+                  <Label>Gym ID</Label>
+                  <div className="text-muted-foreground">{gymId}</div>
                 </div>
-                <Separator />
-                <div className="flex items-center justify-between font-medium">
-                  <div>Total</div>
-                  <div>{`$${charges}`}</div>
+                <div className="grid gap-1">
+                  <Label>Start Date</Label>
+                  <div className="text-muted-foreground">
+                    {new Date(startDate).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="grid gap-1">
+                  <Label>End Date</Label>
+                  <div className="text-muted-foreground">
+                    {new Date(endDate).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="grid gap-1">
+                  <Label>Total</Label>
+                  <div className="text-2xl font-bold">{`$${charges}`}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
+          <div>
+            <StripeWrapper
+              userId={userId}
+              startDate={startDate}
+              endDate={endDate}
+              gymId={gymId}
+              charges={charges}
+            />
+          </div>
         </div>
-      </ProtectedRoute>
-    </Suspense>
+        <div className="mt-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Purchase Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="flex items-center justify-between">
+                <div>Gym Membership</div>
+                <div className="font-medium">{`$${charges}`}</div>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between font-medium">
+                <div>Total</div>
+                <div>{`$${charges}`}</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }
