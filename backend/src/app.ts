@@ -1,13 +1,13 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import dotenv from 'dotenv';
-import totalBookings from './routes/totalbookings';
-import totalEarnings from './routes/totalearnings';
-import totalBookedUsers from './routes/totalbookedusers';
-import {connectDB} from './config/database';
-import gymRouter from './routes/gyms';
-import reviewsRouter from './routes/reviews';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import dotenv from "dotenv";
+import totalBookings from "./routes/totalbookings";
+import totalEarnings from "./routes/totalearnings";
+import totalBookedUsers from "./routes/totalbookedusers";
+import { connectDB } from "./config/database";
+import gymRouter from "./routes/gyms";
+import reviewsRouter from "./routes/reviews";
 
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
@@ -16,10 +16,8 @@ import { StripeService } from "./services/StripeService";
 import monthlyBookings from "./routes/monthlybookings";
 import monthlyEarnings from "./routes/monthlyearnings";
 
-
 dotenv.config();
 connectDB();
-
 
 const app = express();
 
@@ -52,9 +50,10 @@ app.use("/totalEarnings", totalEarnings);
 app.use("/totalBookedUsers", totalBookedUsers);
 app.use("/monthlyEarnings", monthlyEarnings);
 app.use("/monthlyBookings", monthlyBookings);
-app.use('/api/gyms', gymRouter);
-app.use('/api/reviews', reviewsRouter);
+app.use("/api/gyms", gymRouter);
+app.use("/api/reviews", reviewsRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
+app.post("/api/create-booking", paymentController.createBooking);
 
 const PORT = process.env.PORT || 8080;
 
