@@ -65,5 +65,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-
-emailService.sendBookingConfirmation("patelkenee2804@gmail.com", {});
