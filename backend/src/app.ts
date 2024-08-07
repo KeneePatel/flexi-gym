@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { connectDB } from "./config/database";
 import gymRouter from "./routes/gyms";
 import reviewsRouter from "./routes/reviews";
+import cancelBooking from "./routes/cancelbooking";
 import totalBookedUsers from "./routes/totalbookedusers";
 import totalBookings from "./routes/totalbookings";
 import totalEarnings from "./routes/totalearnings";
@@ -14,6 +15,7 @@ import { BookingRepository } from "./repositories/BookingRepository";
 import bookingsRouter from "./routes/bookings";
 import monthlyBookings from "./routes/monthlybookings";
 import monthlyEarnings from "./routes/monthlyearnings";
+import advertisementRouter from "./routes/advertisements";
 import { EmailService } from "./services/EmailService";
 import { StripeService } from "./services/StripeService";
 
@@ -21,8 +23,8 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Middlewares
 app.use(
@@ -70,3 +72,5 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
+emailService.sendBookingConfirmation("patelkenee2804@gmail.com", {});
