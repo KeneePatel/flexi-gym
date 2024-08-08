@@ -8,7 +8,7 @@ import totalBookedUsers from "./routes/totalbookedusers";
 import { connectDB } from "./config/database";
 import gymRouter from "./routes/gyms";
 import reviewsRouter from "./routes/reviews";
-
+import cancelBooking from "./routes/cancelbooking"
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
 import bookingsRouter from "./routes/bookings";
@@ -46,6 +46,7 @@ const paymentController = new PaymentController(
 // Routes (to be added later)
 app.use("/api/bookings", bookingsRouter);
 app.use("/totalBookings", totalBookings);
+app.use("/cancelbooking", cancelBooking);
 app.use("/totalEarnings", totalEarnings);
 app.use("/totalBookedUsers", totalBookedUsers);
 app.use("/monthlyEarnings", monthlyEarnings);
