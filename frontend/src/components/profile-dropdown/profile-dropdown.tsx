@@ -23,7 +23,7 @@ interface DecodedToken {
   type?: string;
 }
 
-export function ProfileDropdown() {
+export function ProfileDropdown(props) {
   const context = useContext(AuthContext);
   const [profileData, setProfileData] = useState<DecodedToken | null>(null);
   const userProfile = getProfileData();
@@ -74,12 +74,27 @@ export function ProfileDropdown() {
             Profile
           </DropdownMenuItem>
         </Link>
-        <Link href="/bookings" prefetch={false}>
-          <DropdownMenuItem className="gap-2 hover:cursor-pointer">
-            <CalendarIcon className="w-4 h-4" />
-            Bookings
-          </DropdownMenuItem>
-        </Link>
+        {props.user == "user" ? (
+          <>
+            {" "}
+            <Link href="/bookings" prefetch={false}>
+              <DropdownMenuItem className="gap-2 hover:cursor-pointer">
+                <CalendarIcon className="w-4 h-4" />
+                Bookings
+              </DropdownMenuItem>
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link href="/reservations" prefetch={false}>
+              <DropdownMenuItem className="gap-2 hover:cursor-pointer">
+                <CalendarIcon className="w-4 h-4" />
+                Reservations
+              </DropdownMenuItem>
+            </Link>
+          </>
+        )}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <LogoutConfirmationDialogLink />
