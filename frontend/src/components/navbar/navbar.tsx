@@ -81,7 +81,7 @@ export default function NavBar() {
             )}
 
             <div className="hidden gap-2 md:flex">
-                <ProfileDropdown/>
+                <ProfileDropdown user={loggedInUser?.type}/>
                 <ThemeToggler/>
             </div>
             <div className="flex gap-2 md:hidden">
