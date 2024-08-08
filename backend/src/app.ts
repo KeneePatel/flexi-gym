@@ -39,6 +39,7 @@ app.use(express.json());
 // Dependency injection
 const stripeService = new StripeService(process.env.STRIPE_SECRET_KEY!);
 const emailService = new EmailService();
+emailService.startReminderJob();
 const bookingRepository = new BookingRepository();
 const paymentController = new PaymentController(
   stripeService,
