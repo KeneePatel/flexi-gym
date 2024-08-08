@@ -24,9 +24,9 @@ export class EmailService {
     
     console.log(`sending email to ${userEmail}`);
 
-    const mailOptions = {
+    const mailOptions: nodemailer.SendMailOptions = {
       from: process.env.EMAIL_FROM,
-      to: userEmail,
+      to: userEmail ?? "",
       subject: "Booking Confirmation",
       text: `Your booking has been confirmed! Details: ${JSON.stringify(bookingDetails)}`,
     };
