@@ -96,7 +96,7 @@ const Analytics = () => {
         const monthlyEarningData = await monthEarnRes.json();
         const monthlyBookData = await monthBookRes.json();
         const FetchGyms = await getGym.json();
-        console.log(FetchGyms);
+        console.log(usersData);
           setGyms(FetchGyms);
         setBookings(bookingsData);
         setEarnings(earningsData);
