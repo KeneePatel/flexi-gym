@@ -19,7 +19,8 @@ router.get('/:id', async (req: Request, res: Response) => {
       }
     }
 
-    const bookings = await db.collection('bookings').find({ gymId: id }).toArray();
+    const bookings = await db.collection('bookings').find({ gymId: id,
+      status: "succeeded" }).toArray();
 
     const monthlyEarnings = Array(12).fill(0);
 
