@@ -1,3 +1,10 @@
+/*
+ * File: bookings.ts
+ * Author: Jeet Jani <jeetjani@dal.ca>
+ * Date: 2024-07-30
+ * Description: API operations for the bookings.
+ */
+
 import express, { Request, Response, NextFunction } from 'express';
 import { MongoClient, ObjectId, Db, Collection } from 'mongodb';
 import dotenv from 'dotenv';

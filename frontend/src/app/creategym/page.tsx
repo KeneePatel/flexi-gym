@@ -54,7 +54,7 @@ export default function GymPage() {
     const [weekendHours, setWeekendHours] = useState<string>("");
     const [price, setPrice] = useState<number | undefined>();
     const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
-
+    const [images, setImages] = useState<File[]>([]);
     const [errors, setErrors] = useState({
         name: false,
         title: false,
@@ -95,6 +95,23 @@ export default function GymPage() {
         updatedAmenities[index] = value;
         setAmenities(updatedAmenities);
     };
+    const handleFileChange = (e: { target: { files: Iterable<unknown> | ArrayLike<unknown>; }; }) => {
+        const files = Array.from(e.target.files);
+        const promises = files.map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file as Blob);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        });
+
+        // @ts-ignore
+        Promise.all(promises)
+            .then(base64Files => setImages(base64Files))
+            .catch(error => console.error('Error converting files to base64:', error));
+    };
+
 
     const validateForm = () => {
         const newErrors = {
@@ -115,12 +132,6 @@ export default function GymPage() {
         if (!validateForm()) {
             return;
         }
-
-        const images = [
-            "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            "https://images.pexels.com/photos/317157/pexels-photo-317157.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-        ];
 
         const formData = {
             name,
@@ -259,7 +270,8 @@ export default function GymPage() {
                                                 placeholder="Canada"
                                                 className={`w-full ${errors.country ? 'border-red-500' : ''}`}
                                             />
-                                            {errors.country && <p className="text-red-500 text-xs">Country is required.</p>}
+                                            {errors.country &&
+                                                <p className="text-red-500 text-xs">Country is required.</p>}
                                         </div>
                                     </div>
                                 </div>
@@ -282,7 +294,7 @@ export default function GymPage() {
                                                 onClick={() => removeAmenity(index)}
                                                 className="text-red-500 hover:bg-red-500 hover:text-white"
                                             >
-                                                <XIcon className="h-4 w-4" />
+                                                <XIcon className="h-4 w-4"/>
                                             </Button>
                                         </div>
                                     ))}
@@ -335,6 +347,23 @@ export default function GymPage() {
                                     </div>
                                 </div>
                             </section>
+                            <section className="grid gap-4">
+                                <h2 className="text-xl font-semibold">Upload Images</h2>
+                                <div className="grid gap-3">
+                                    <div className="grid gap-1">
+                                        <Label htmlFor="images" className="text-sm font-medium">
+                                            Images
+                                        </Label>
+                                        <Input
+                                            id="images"
+                                            type="file"
+                                            multiple
+                                            onChange={handleFileChange}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                </div>
+                            </section>
                             <CardFooter>
                                 <div className="flex justify-end">
                                     <Button type="submit">Save Listing</Button>
@@ -343,7 +372,7 @@ export default function GymPage() {
                         </form>
                     </CardContent>
                 </Card>
-                <ToastContainer />
+                <ToastContainer/>
             </div>
         </ProtectedRoute>
     );
