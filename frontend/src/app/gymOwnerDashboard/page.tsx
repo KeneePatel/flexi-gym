@@ -199,13 +199,6 @@ const Dashboard = () => {
                 key={gym._id}
                 className="relative overflow-hidden transition-transform duration-300 ease-in-out rounded-lg shadow-lg group hover:shadow-xl hover:-translate-y-2"
               >
-                <Link
-                  href={`/analytics/${gym._id}`}
-                  className="absolute inset-0 z-10"
-                  prefetch={false}
-                >
-                  <span className="sr-only">View</span>
-                </Link>
                 <img
                   src={gym.images[0]}
                   alt={gym.name}
@@ -217,9 +210,9 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-bold">{gym.name}</h3>
                     <div className="flex items-center gap-1 text-sm font-medium text-primary">
-                      <StarIcon className="w-4 h-4 fill-primary" />
+                      <StarIcon className="w-4 h-4 fill-primary"/>
                       {(gym.ratings.totalRatings / gym.ratings.count).toFixed(
-                        1
+                          1
                       )}
                     </div>
                   </div>
@@ -228,19 +221,29 @@ const Dashboard = () => {
                   </p>
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-lg font-semibold">${gym.price}/day</p>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" asChild>
+                        <Link href={`/gyms/${gym._id}`}>Edit</Link>
+                      </Button>
+                      <Button variant="outline" asChild>
+                        <Link href={`/analytics/${gym._id}`} prefetch={false}>
+                          View
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="justify-center align-center flex-wrap font-extrabold text-3xl ">
-              <p className=" font-extrabold text-3xl " >
-                No gyms found
-              </p>
-              <p className=" font-semibold text-sm ">
-                Add a Gym from Navbar First
-              </p>
-            </div>
+              <div className="justify-center align-center flex-wrap font-extrabold text-3xl ">
+                <p className=" font-extrabold text-3xl ">
+                  No gyms found
+                </p>
+                <p className=" font-semibold text-sm ">
+                  Add a Gym from Navbar First
+                </p>
+              </div>
           )}
         </div>
       </div>

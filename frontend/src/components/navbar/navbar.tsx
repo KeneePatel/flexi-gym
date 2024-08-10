@@ -9,6 +9,7 @@ import { AuthContext } from "../../../Auth/AuthContext";
 import {getProfileData} from '../../../Auth/AuthService'
 import React, {useContext, useEffect, useState} from "react";
 import MobileNav from "./mobile-nav";
+import {jwtDecode} from "jwt-decode";
 
 interface LoggedInUser {
   firstName?: string;
@@ -23,10 +24,14 @@ export default function NavBar() {
   const context = useContext(AuthContext);
   const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
 
+
+
   useEffect(() => {
     const loadProfileData = async () => {
       try {
-        const userProfile = await getProfileData();
+        const token = localStorage.getItem('accessToken');
+        // @ts-ignore
+        const userProfile = jwtDecode(token);
         if (userProfile) {
           // @ts-ignore
           setLoggedInUser(userProfile);

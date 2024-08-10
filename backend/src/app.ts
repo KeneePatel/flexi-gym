@@ -8,6 +8,7 @@ import totalBookedUsers from "./routes/totalbookedusers";
 import { connectDB } from "./config/database";
 import gymRouter from "./routes/gyms";
 import reviewsRouter from "./routes/reviews";
+import bodyParser from "body-parser";
 import cancelBooking from "./routes/cancelbooking"
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
@@ -16,10 +17,13 @@ import { StripeService } from "./services/StripeService";
 import monthlyBookings from "./routes/monthlybookings";
 import monthlyEarnings from "./routes/monthlyearnings";
 
+
 dotenv.config();
 connectDB();
 
 const app = express();
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Middlewares
 app.use(
