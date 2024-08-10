@@ -37,7 +37,7 @@ export default function NavBar() {
     };
 
     loadProfileData();
-  }, []);
+  }, [context]);
 
 
   // @ts-ignore
