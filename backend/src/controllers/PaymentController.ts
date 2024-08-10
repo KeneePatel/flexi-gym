@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import { StripeService } from "../services/StripeService";
 import {
   BookingRepository,
   CreateBookingRequest,
 } from "../repositories/BookingRepository";
+import { EmailService } from "../services/EmailService";
+import { StripeService } from "../services/StripeService";
 
 export class PaymentController {
   constructor(
     private stripeService: StripeService,
+    private emailService: EmailService,
     private bookingRepository: BookingRepository,
   ) {}
 
@@ -40,6 +42,16 @@ export class PaymentController {
         return;
       }
       console.log("created a booking");
+
+      try {
+        await this.emailService.sendBookingConfirmation(
+          bookingRequest.userId,
+          bookingRequest,
+        );
+        console.log("Sent booking confirmation email");
+      } catch (emailError) {
+        console.log(`Error sending confirmation email: ${emailError}`);
+      }
     } catch (error) {
       console.log(`error creating the booking: ${error}`);
       res.status(500).json({ error: "Failed to create the booking" });

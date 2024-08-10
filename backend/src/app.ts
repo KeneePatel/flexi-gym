@@ -1,26 +1,30 @@
-import express from "express";
 import cors from "cors";
-import helmet from "helmet";
 import dotenv from "dotenv";
-import totalBookings from "./routes/totalbookings";
-import totalEarnings from "./routes/totalearnings";
-import totalBookedUsers from "./routes/totalbookedusers";
+import express from "express";
+import helmet from "helmet";
 import { connectDB } from "./config/database";
 import gymRouter from "./routes/gyms";
 import reviewsRouter from "./routes/reviews";
-import cancelBooking from "./routes/cancelbooking"
+import cancelBooking from "./routes/cancelbooking";
+import totalBookedUsers from "./routes/totalbookedusers";
+import totalBookings from "./routes/totalbookings";
+import totalEarnings from "./routes/totalearnings";
+import bodyParser from 'body-parser';
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
 import bookingsRouter from "./routes/bookings";
-import { StripeService } from "./services/StripeService";
 import monthlyBookings from "./routes/monthlybookings";
 import monthlyEarnings from "./routes/monthlyearnings";
 import advertisementRouter from "./routes/advertisements";
+import { EmailService } from "./services/EmailService";
+import { StripeService } from "./services/StripeService";
 
 dotenv.config();
 connectDB();
 
 const app = express();
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Middlewares
 app.use(
@@ -36,11 +40,14 @@ app.use(express.json());
 // Connect to database
 // connectDB();
 
-// Dependency injectio
+// Dependency injection
 const stripeService = new StripeService(process.env.STRIPE_SECRET_KEY!);
+const emailService = new EmailService();
+emailService.startReminderJob();
 const bookingRepository = new BookingRepository();
 const paymentController = new PaymentController(
   stripeService,
+  emailService,
   bookingRepository,
 );
 
@@ -65,3 +72,5 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
+emailService.sendBookingConfirmation("patelkenee2804@gmail.com", {});
