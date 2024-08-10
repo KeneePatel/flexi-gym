@@ -184,22 +184,27 @@ const Analytics = () => {
         <div className="flex flex-col">
           {/* Button positioned absolutely */}
           <div className="absolute top-9 right-6">
-            <Link href={`/advertisements/${gymId}`} passHref>
-              <Button className="bg-white text-black hover:bg-gray-100">
-                Manage Ads
-              </Button>
-            </Link>
+
           </div>
 
           {/* Header with reduced top margin */}
-          <header className="text-center mt-2 mb-8">
+          <header className="text-center mt-2 mb-2">
             <h1 className="text-4xl font-bold text-secondary-foreground">
               {user?.gymName} Dashboard
             </h1>
+            
             <h2 className="text-2xl mt-2 text-secondary-foreground">{gyms?.name} Overview</h2>
           </header>
+          <div className="flex justify-end mb-5">
 
-
+              <div >
+                <Card>
+                  <Link href={`/advertisements/${gymId}`} passHref>
+                    <Button variant="outline" className="bg-white text-black hover:bg-gray-100"> Manage Ads </Button>
+                  </Link>
+                </Card>
+              </div>
+            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <Card className="w-full">
