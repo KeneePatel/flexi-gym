@@ -1,123 +1,42 @@
-"use client"
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import axios from 'axios';
-import { StarIcon } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { useEffect, useState } from 'react';
+import SearchGyms from "@/components/gym-search/gymSearch";
+import Advertisement from "@/components/promotions/promotions";
 
-type sortOptionType = "Our top picks" | "Price (lowest first)" | "Best reviewed" | "Property rating (high to low)"
-
-const SearchGyms = () => {
-  const [gyms, setGyms] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [city, setCity] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sortOption, setSortOption] = useState('Our top picks');
-
-  const fetchGyms = async () => {
-    setLoading(true);
-    const payload = {
-      name: searchTerm,
-      city, // Use city for location search
-      sortOption // Include sort option in the payload
-    };
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/gyms/search`, payload);
-      setGyms(response.data);
-    } catch (error) {
-      console.error('Error fetching gyms:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  const handleSelect = (eventKey) => {
-    setSortOption(eventKey);
-    fetchGyms(); // Fetch gyms immediately when sort option changes
-  };
-
-  useEffect(() => {
-    fetchGyms();
-  }, [sortOption, searchTerm, city]); // Fetch gyms when these dependencies change
-
+export default function GymSearch() {
   return (
-    <div style={{ marginTop: '30px' }}>
-      {loading ? ( // Conditional rendering for loading state
-        <div className="flex justify-center items-center h-screen">
-          <div className="loader"></div> {/* Add your loading spinner here */}
-        </div>
-      ) : (
-        <>
-          <div className="flex flex-col gap-4 p-4 mx-4">
-            <div className="flex flex-row gap-4 items-center">
-              <input
-                type="text"
-                placeholder="Search gyms by name..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Enter city..."
-                value={city}
-                onChange={e => setCity(e.target.value)}
-              />
-              <div className="flex items-center gap-2">
-                <span>Sort by:</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="default">{sortOption}</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>Sorting Options</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => handleSelect("Our top picks")}>Our top picks</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleSelect("Price (lowest first)")}>Price (lowest first)</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleSelect("Best reviewed and lowest price")}>Best reviewed and lowest price</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleSelect("Property rating (high to low)")}>Property rating (high to low)</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
-
-            {gyms.length > 0 ? gyms.map(gym => (
-              <div
-                key={gym._id}
-                className="relative overflow-hidden transition-transform duration-300 ease-in-out rounded-lg shadow-lg group hover:shadow-xl hover:-translate-y-2"
+    <div className="flex flex-col h-full">
+      <main className="flex-1" />
+      <div className="bg-background border-t">
+        <div className="container px-4 md:px-6 py-4 flex justify-between">
+          <Tabs defaultValue="gyms" className="w-full">
+            <TabsList className="flex border-b">
+              <TabsTrigger
+                value="gyms"
+                className="flex-1 text-center py-2"
               >
-                <Link href={`/gymDetails/${gym._id}`} className="absolute inset-0 z-10" prefetch={false}>
-                  <span className="sr-only">View</span>
-                </Link>
-                <img src={gym.images[0]} alt={gym.name} width={400} height={300} className="object-cover w-full h-64" />
-                <div className="p-4 bg-background">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold">{gym.name}</h3>
-                    <div className="flex items-center gap-1 text-sm font-medium text-primary">
-                      <StarIcon className="w-4 h-4 fill-primary" />
-                      {(gym.ratings.totalRatings / gym.ratings.count).toFixed(1)}
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{gym.location.street}, {gym.location.city}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <p className="text-lg font-semibold">${gym.price}/day</p>
-                    <Button variant="outline" size="sm">
-                      Join Now
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )) : <p>No gyms found</p>}
-          </div>
-        </>
-      )}
+                Gyms
+              </TabsTrigger>
+              <TabsTrigger
+                value="offers"
+                className="flex-1 text-center py-2"
+              >
+                Promotions
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="gyms">
+              <SearchGyms />
+            </TabsContent>
+            <TabsContent value="offers">
+            <Advertisement />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default SearchGyms;
+}

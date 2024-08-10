@@ -44,6 +44,7 @@ import ProtectedRoute from '../../../../Auth/ProtectedRoutes';
 import { getProfileData } from "../../../../Auth/AuthService";
 import httpFetch from "@/lib/httpFetch";
 import { GET_GYM, GET_REVIEWS } from "@/Constants/EndPoints";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Component() {
     const params = useParams();
@@ -127,9 +128,14 @@ export default function Component() {
             if (response.ok) {
                 setReviews((prevReviews) => [newReview, ...prevReviews]);
                 setNewReview({ rating: 0, comment: "", username: user.firstName + " "+ user.lastName, userid: user.id });
+                giveReviewToast("success", "The review submitted successfully!");
+            }
+            else {
+                giveReviewToast("destructive", "Failed to submit review!");
             }
         } catch (error) {
             console.error("Error adding review:", error);
+            giveReviewToast("destructive", "Failed to submit review!");
         }
     };
 
@@ -153,9 +159,14 @@ export default function Component() {
                     )
                 );
                 setEditingReview(null);
+                giveReviewToast("success", "Review edited successfully!");
+            }
+            else {
+                giveReviewToast("destructive", "Failed to edit review!");
             }
         } catch (error) {
             console.error("Error editing review:", error);
+            giveReviewToast("destructive", "Failed to edit review!");
         }
     };
 
@@ -172,9 +183,15 @@ export default function Component() {
                     prevReviews.filter((review) => review._id !== deleteReviewId)
                 );
                 setDeleteReviewId(null);
+                giveReviewToast("success", "Review deleted successfully!");
+            }
+            else {
+                giveReviewToast("destructive", "Failed to delete review!");
             }
         } catch (error) {
             console.error("Error deleting review:", error);
+            giveReviewToast("destructive", "Failed to delete review!");
+
         }
     };
 
@@ -219,11 +236,19 @@ export default function Component() {
     } = gymDetails;
     const totalRatings = parseInt(ratings.totalRatings);
     const ratingCount = parseInt(ratings.count);
-    const averageRating = (totalRatings / ratingCount).toFixed(1);
+    const averageRating = ratingCount > 0 ? (totalRatings / ratingCount).toFixed(1) : 0;
 
     const handleBookNow = () => {
         router.push(`/bookingConfirmation/${gymId}/new`);
     };
+
+    const giveReviewToast = (variant: string, description: string) => {
+        toast({
+          variant: variant,
+          title: "Review status",
+          description: description,
+        });
+      };
 
     return (
         <ProtectedRoute>
