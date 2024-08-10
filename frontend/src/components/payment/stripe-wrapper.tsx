@@ -9,8 +9,28 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
-export const StripeWrapper: React.FC = () => (
+type StripeWrapperProps = {
+  userId: string;
+  gymId: string;
+  startDate: Date;
+  endDate: Date;
+  charges: number;
+};
+
+export const StripeWrapper: React.FC<StripeWrapperProps> = ({
+  userId,
+  gymId,
+  startDate,
+  endDate,
+  charges,
+}) => (
   <Elements stripe={stripePromise}>
-    <CheckoutForm />
+    <CheckoutForm
+      userId={userId}
+      gymId={gymId}
+      startDate={startDate}
+      endDate={endDate}
+      charges={charges}
+    />
   </Elements>
 );
