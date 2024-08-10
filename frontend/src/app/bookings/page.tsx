@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { StarIcon } from "lucide-react";
 import httpFetch from '@/lib/httpFetch';
 import { GET_REVIEWS } from '@/Constants/EndPoints';
+import { toast } from '@/components/ui/use-toast';
 
 interface Booking {
   startDate: string;
@@ -99,10 +100,22 @@ export default function Component() {
       if (response.ok) {
         setIsDialogOpen(false);
         setFeedback({ rating: 0, comment: "" });
+        giveReviewToast("success", "The review submitted successfully!");
+      } else {
+        giveReviewToast("destructive", "Failed to submit review!");
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
+      giveReviewToast("destructive", "Failed to submit review!");
     }
+  };
+
+  const giveReviewToast = (variant: string, description: string) => {
+    toast({
+      variant: variant,
+      title: "Review status",
+      description: description,
+    });
   };
 
   const handleRate = (booking: Booking) => {
