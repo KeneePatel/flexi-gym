@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { StripeService } from "../services/StripeService";
-import { BookingRepository } from "../repositories/BookingRepository";
+import {
+  BookingRepository,
+  CreateBookingRequest,
+} from "../repositories/BookingRepository";
 
 export class PaymentController {
   constructor(
@@ -12,23 +15,34 @@ export class PaymentController {
     console.log("Received request to create payment intent");
 
     try {
-      const { bookingId } = req.body;
-      const booking = await this.bookingRepository.getBookingById(bookingId);
-
-      if (!booking) {
-        res.status(404).json({ error: "Booking not found" });
-        return;
-      }
+      const { charges } = req.body;
 
       const clientSecret = await this.stripeService.createPaymentIntent(
-        booking.totalAmount,
-        { bookingId: booking.id, userId: booking.userId, gymId: booking.gymId },
+        charges * 100,
       );
 
       res.json({ clientSecret });
     } catch (error) {
       console.log(`error creating a payment intent: ${error}`);
       res.status(500).json({ error: "Failed to create payment intent" });
+    }
+  };
+
+  createBooking = async (req: Request, res: Response): Promise<void> => {
+    console.log("Received request to create booking");
+
+    try {
+      const bookingRequest: CreateBookingRequest = req.body;
+      const success: Boolean =
+        await this.bookingRepository.createBooking(bookingRequest);
+      if (!success) {
+        console.log("failed to create a booking");
+        return;
+      }
+      console.log("created a booking");
+    } catch (error) {
+      console.log(`error creating the booking: ${error}`);
+      res.status(500).json({ error: "Failed to create the booking" });
     }
   };
 }
