@@ -21,6 +21,8 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Middlewares
 app.use(
@@ -50,12 +52,14 @@ const paymentController = new PaymentController(
 // Routes (to be added later)
 app.use("/api/bookings", bookingsRouter);
 app.use("/totalBookings", totalBookings);
+app.use("/cancelbooking", cancelBooking);
 app.use("/totalEarnings", totalEarnings);
 app.use("/totalBookedUsers", totalBookedUsers);
 app.use("/monthlyEarnings", monthlyEarnings);
 app.use("/monthlyBookings", monthlyBookings);
 app.use("/api/gyms", gymRouter);
 app.use("/api/reviews", reviewsRouter);
+app.use("/api/advertisements", advertisementRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 app.post("/api/create-booking", paymentController.createBooking);
 
