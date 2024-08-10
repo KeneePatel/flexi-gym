@@ -9,4 +9,5 @@ export const GET_GYM = `${BASE_URL}/api/gyms`;
 export const GET_REVIEWS = `${BASE_URL}/api/reviews`;
 export const BOOKINGS_ENDPOINT = `${BASE_URL}/api/bookings`;
 export const GET_GYMS_BY_USER = `${BASE_URL}/api/gyms/user`;
+export const GET_ADVERTISEMENT = `${BASE_URL}/api/advertisements`;
 
