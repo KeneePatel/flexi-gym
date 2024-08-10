@@ -15,6 +15,7 @@ import bookingsRouter from "./routes/bookings";
 import { StripeService } from "./services/StripeService";
 import monthlyBookings from "./routes/monthlybookings";
 import monthlyEarnings from "./routes/monthlyearnings";
+import advertisementRouter from "./routes/advertisements";
 
 dotenv.config();
 connectDB();
@@ -55,6 +56,7 @@ app.use("/monthlyEarnings", monthlyEarnings);
 app.use("/monthlyBookings", monthlyBookings);
 app.use("/api/gyms", gymRouter);
 app.use("/api/reviews", reviewsRouter);
+app.use("/api/advertisements", advertisementRouter);
 app.post("/api/create-payment-intent", paymentController.createPaymentIntent);
 app.post("/api/create-booking", paymentController.createBooking);
 
