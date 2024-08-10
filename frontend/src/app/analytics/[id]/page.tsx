@@ -86,7 +86,7 @@ const Analytics = () => {
             fetch(process.env.NEXT_PUBLIC_API_URL + "/totalBookedUsers/" + gymId),
             fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyEarnings/" + gymId),
             fetch(process.env.NEXT_PUBLIC_API_URL + "/monthlyBookings/" + gymId),
-            fetch(process.env.NEXT_PUBLIC_API_URL +  "/api/gyms/" + gymId),
+            fetch(process.env.NEXT_PUBLIC_API_URL + "/api/gyms/" + gymId),
 
           ]);
 
@@ -97,7 +97,7 @@ const Analytics = () => {
         const monthlyBookData = await monthBookRes.json();
         const FetchGyms = await getGym.json();
         console.log(usersData);
-          setGyms(FetchGyms);
+        setGyms(FetchGyms);
         setBookings(bookingsData);
         setEarnings(earningsData);
         setUsers(usersData.users);
@@ -179,90 +179,103 @@ const Analytics = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-primary-foreground p-6">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-secondary-foreground">
-            {user?.gymName} Dashboard
-          </h1>
-          <h2 className="text-2xl mt-2 text-secondary-foreground">{gyms?.name} Overview</h2>
-        </header>
+      <div className="min-h-screen bg-primary-foreground p-6 relative">
+        {/* Main content container */}
+        <div className="flex flex-col">
+          {/* Button positioned absolutely */}
+          <div className="absolute top-9 right-6">
+            <Link href={`/advertisements/${gymId}`} passHref>
+              <Button className="bg-white text-black hover:bg-gray-100">
+                Manage Ads
+              </Button>
+            </Link>
+          </div>
 
-       
+          {/* Header with reduced top margin */}
+          <header className="text-center mt-2 mb-8">
+            <h1 className="text-4xl font-bold text-secondary-foreground">
+              {user?.gymName} Dashboard
+            </h1>
+            <h2 className="text-2xl mt-2 text-secondary-foreground">{gyms?.name} Overview</h2>
+          </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>Total Bookings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-semibold">{bookings}</p>
-            </CardContent>
-          </Card>
 
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>Total Earnings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-semibold">${earnings}</p>
-            </CardContent>
-          </Card>
 
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>New Bookings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 ">
-              {users == 0 ? (
-                <>
-                <p>No users have booked your gym yet</p>
-                </>
-              ) : (
-                <>
-                {users?.map((user) => (
-                  <div
-                    key={user._id}
-                    className="mb-4 hover:bg-secondary p-2 rounded-lg"
-                  >
-                    <p className="text-md ">
-                      {user?.firstName} {user?.lastName}
-                    </p>
-                  </div>
-                ))}
-                </>
-              )}
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Total Bookings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-semibold">{bookings}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Total Earnings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-semibold">${earnings}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>New Bookings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 ">
+                {users == 0 ? (
+                  <>
+                    <p>No users have booked your gym yet</p>
+                  </>
+                ) : (
+                  <>
+                    {users?.map((user) => (
+                      <div
+                        key={user._id}
+                        className="mb-4 hover:bg-secondary p-2 rounded-lg"
+                      >
+                        <p className="text-md ">
+                          {user?.firstName} {user?.lastName}
+                        </p>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <Tabs defaultValue="earnings" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="earnings">Earnings</TabsTrigger>
+              <TabsTrigger value="bookings">Bookings</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="earnings">
+              <Card className="w-full mb-6">
+                <CardHeader>
+                  <CardTitle>Monthly Earnings</CardTitle>
+                </CardHeader>
+                <CardContent className="h-64">
+                  <Line data={earningsChartData} options={chartOptions} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="bookings">
+              <Card className="w-full mb-6">
+                <CardHeader>
+                  <CardTitle>Monthly Bookings</CardTitle>
+                </CardHeader>
+                <CardContent className="h-64">
+                  <Line data={bookingsChartData} options={chartOptions} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <Tabs defaultValue="earnings" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="earnings">Earnings</TabsTrigger>
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="earnings">
-            <Card className="w-full mb-6">
-              <CardHeader>
-                <CardTitle>Monthly Earnings</CardTitle>
-              </CardHeader>
-              <CardContent className="h-64">
-                <Line data={earningsChartData} options={chartOptions} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="bookings">
-            <Card className="w-full mb-6">
-              <CardHeader>
-                <CardTitle>Monthly Bookings</CardTitle>
-              </CardHeader>
-              <CardContent className="h-64">
-                <Line data={bookingsChartData} options={chartOptions} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
     </ProtectedRoute>
   );
