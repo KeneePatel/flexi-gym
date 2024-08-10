@@ -9,7 +9,7 @@ import cancelBooking from "./routes/cancelbooking";
 import totalBookedUsers from "./routes/totalbookedusers";
 import totalBookings from "./routes/totalbookings";
 import totalEarnings from "./routes/totalearnings";
-
+import bodyParser from 'body-parser';
 import { PaymentController } from "./controllers/PaymentController";
 import { BookingRepository } from "./repositories/BookingRepository";
 import bookingsRouter from "./routes/bookings";
