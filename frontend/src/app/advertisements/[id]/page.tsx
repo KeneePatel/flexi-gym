@@ -79,10 +79,18 @@ export default function Component() {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setEditedImage(imageUrl);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64String = reader.result as string;
+                setEditedImage(base64String); // Store the base64 string
+            };
+            reader.onerror = (error) => {
+                console.error('Error converting file to base64:', error);
+            };
         }
     };
+    
 
     const handleSave = () => {
         // Reset form errors
