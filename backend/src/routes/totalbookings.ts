@@ -18,7 +18,8 @@ router.get('/:id', async (req, res) => {
         }
       }
 
-      const total = await db.collection('bookings').find({ gymId: req.params.id}).toArray();
+      const total = await db.collection('bookings').find({ gymId: req.params.id,
+        status: "succeeded"}).toArray();
 
 
       res.json(total.length);
