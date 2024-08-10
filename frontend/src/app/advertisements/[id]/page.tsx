@@ -1,27 +1,31 @@
+/*
+ * File: advertisement/[id].tsx
+ * Author: Jeet Jani <jeetjani@dal.ca>
+ * Date: 2024-08-10
+ * Description: Frontend logic for advertisements for gym owner side.
+ */
+
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ConfirmationModal from "../../../components/modals/ConfirmationModal";
+import { ADS, GET_ADS_BY_GYM } from "@/Constants/EndPoints";
 
 interface Ad {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   image: string;
+  gymId: string;
 }
 
 export default function Component() {
-  const [ads, setAds] = useState<Ad[]>([
-    { id: '1', title: "Acme Promo Offer", description: "Get 20% off on all our products this week only!", image: "/placeholder.svg" },
-    { id: '2', title: "Summer Sale", description: "Huge discounts on all our summer collections.", image: "/placeholder.svg" },
-    { id: '3', title: "New Product Launch", description: "Check out our latest product, the Acme Turbo 3000.", image: "/placeholder.svg" },
-  ]);
-
+  const [ads, setAds] = useState<Ad[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationModalProps, setConfirmationModalProps] = useState({
@@ -36,6 +40,22 @@ export default function Component() {
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedImage, setEditedImage] = useState("");
+
+  useEffect(() => {
+    fetchAds();
+  }, []);
+
+  const fetchAds = async () => {
+    try {
+      const response = await fetch(`${GET_ADS_BY_GYM}/66a576c7d989398aea3ba6af`);
+      if (!response.ok) throw new Error('Failed to fetch advertisements');
+      const data = await response.json();
+      console.log("data", data);
+      setAds(data);
+    } catch (error) {
+      console.error('Error fetching advertisements:', error);
+    }
+  };
 
   const handleUpdate = (ad: Ad) => {
     setEditingAd(ad);
@@ -64,23 +84,37 @@ export default function Component() {
     setShowConfirmationModal(true);
   };
 
-  const handleSaveConfirm = () => {
-    if (editingAd) {
-      const updatedAds = ads.map(ad => 
-        ad.id === editingAd.id ? { ...ad, title: editedTitle, description: editedDescription, image: editedImage } : ad
-      );
-      setAds(updatedAds);
-    } else {
-      const newAd: Ad = {
-        id: Date.now().toString(),
+  const handleSaveConfirm = async () => {
+    try {
+      const adData = {
         title: editedTitle,
         description: editedDescription,
         image: editedImage,
+        gymId: editingAd?.gymId || 'default-gym-id', // Replace with actual gym ID
       };
-      setAds([...ads, newAd]);
+
+      if (editingAd) {
+        const response = await fetch(`${ADS}/${editingAd._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adData),
+        });
+        if (!response.ok) throw new Error('Failed to update advertisement');
+      } else {
+        const response = await fetch(`${ADS}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adData),
+        });
+        if (!response.ok) throw new Error('Failed to create advertisement');
+      }
+
+      setShowModal(false);
+      setShowConfirmationModal(false);
+      fetchAds(); // Refresh the ads list
+    } catch (error) {
+      console.error('Error saving advertisement:', error);
     }
-    setShowModal(false);
-    setShowConfirmationModal(false);
   };
 
   const handleDelete = (ad: Ad) => {
@@ -88,10 +122,17 @@ export default function Component() {
       title: `Are you sure you want to delete "${ad.title}"?`,
       confirmText: "Yes",
       cancelText: "No",
-      onConfirm: () => {
-        const updatedAds = ads.filter(item => item.id !== ad.id);
-        setAds(updatedAds);
-        setShowConfirmationModal(false);
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`${ADS}/${ad._id}`, {
+            method: 'DELETE',
+          });
+          if (!response.ok) throw new Error('Failed to delete advertisement');
+          setShowConfirmationModal(false);
+          fetchAds(); // Refresh the ads list
+        } catch (error) {
+          console.error('Error deleting advertisement:', error);
+        }
       },
       variant: 'destructive',
     });
@@ -129,9 +170,9 @@ export default function Component() {
           </Button>
         </div>
         {ads.map(ad => (
-          <div key={ad.id} className="grid md:grid-cols-[150px_1fr_auto] gap-4 items-center border rounded-lg overflow-hidden">
+          <div key={ad._id} className="grid md:grid-cols-[150px_1fr_auto] gap-4 items-center border rounded-lg overflow-hidden">
             <img
-              src={ad.image}
+              src={ad.image || "/placeholder.svg"}
               alt="Advertisement Thumbnail"
               width={150}
               height={100}

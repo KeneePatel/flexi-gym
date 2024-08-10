@@ -1,9 +1,10 @@
 /*
- * File: bookings.ts
- * Author: Jeet Jani <jeet@dal.ca>
+ * File: bookings/page.tsx
+ * Author: Jeet Jani <jeetjani@dal.ca>
  * Date: 2024-07-30
- * Description: Booking list.
+ * Description: Frontend logic for booking list.
  */
+
 'use client';
 
 import { useEffect, useState } from 'react';
