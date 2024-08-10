@@ -1,23 +1,46 @@
+import { ObjectId } from "mongodb";
+import { connectDB, getDB } from "../config/database";
+
 interface Booking {
-  id: string;
+  _id: ObjectId;
   userId: string;
   gymId: string;
-  duration: number;
-  totalAmount: number;
+  startDate: string;
+  endDate: string;
+  charges: number;
+  status: "succeeded" | "cancelled";
+}
+
+export interface CreateBookingRequest {
+  userId: string;
+  gymId: string;
+  startDate: string;
+  endDate: string;
+  charges: number;
+  status: "succeeded" | "cancelled";
 }
 
 export class BookingRepository {
-  // This is a mock implementation. In the actual app, this would interact with the database.
-  async getBookingById(id: string): Promise<Booking | null> {
-    // Dummy data for illustration purpose
-    const dummyBooking: Booking = {
-      id: "booking_123",
-      userId: "user_456",
-      gymId: "gym_789",
-      duration: 2,
-      totalAmount: 2000,
-    };
+  async createBooking(bookingReq: CreateBookingRequest): Promise<Boolean> {
+    await connectDB();
+    const database = getDB();
+    const bookingsCollection = database.collection<Booking>("bookings");
 
-    return id === dummyBooking.id ? dummyBooking : null;
+    try {
+      const newBooking: Booking = {
+        _id: new ObjectId(),
+        userId: bookingReq.userId,
+        gymId: bookingReq.gymId,
+        startDate: bookingReq.startDate,
+        endDate: bookingReq.endDate,
+        charges: bookingReq.charges,
+        status: "succeeded",
+      };
+      await bookingsCollection.insertOne(newBooking);
+      return true;
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      return false;
+    }
   }
 }

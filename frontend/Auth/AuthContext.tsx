@@ -1,6 +1,6 @@
 'use client';
 import React, {createContext, useState, useEffect, ReactNode} from 'react';
-import { getAccessToken,setAccessToken } from "../Auth/AuthService";
+import { getAccessToken,setAccessToken,removeAccessToken } from "../Auth/AuthService";
 import {jwtDecode} from "jwt-decode";
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 
     const signout = () => {
-        setAccessToken('');
+        removeAccessToken();
         setToken(null);
         setIsAuthenticated(false);
     };

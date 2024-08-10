@@ -1,114 +1,42 @@
-"use client"
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import axios from 'axios';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import SearchGyms from "@/components/gym-search/gymSearch";
+import Advertisement from "@/components/promotions/promotions";
 
-
-type sortOptionType = "Our top picks" | "Price (lowest first)" | "Best reviewed" | "Property rating (high to low)"
-
-const SearchGyms = () => {
-  const [gyms, setGyms] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [city, setCity] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sortOption, setSortOption] = useState('Our top picks');
-
-  const fetchGyms = async () => {
-    setLoading(true);
-    const payload = {
-      name: searchTerm,
-      city, // Use city for location search
-      sortOption // Include sort option in the payload
-    };
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/gyms/search`, payload);
-      setGyms(response.data);
-    } catch (error) {
-      console.error('Error fetching gyms:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  const handleSelect = (eventKey) => {
-    setSortOption(eventKey);
-    fetchGyms(); // Fetch gyms immediately when sort option changes
-  };
-
-  useEffect(() => {
-    fetchGyms();
-  }, [sortOption, searchTerm, city]); // Fetch gyms when these dependencies change
-
+export default function GymSearch() {
   return (
-
-  <div style={{ marginTop: '30px' }}>
-
-    <div>
-      <input
-        type="text"
-        placeholder="Search gyms by name..."
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Enter city..."
-        value={city}
-        onChange={e => setCity(e.target.value)}
-      />
-      <Button onClick={fetchGyms} disabled={loading}>
-        {loading ? 'Loading...' : 'Search Gyms'}
-      </Button>
-
-
-
-      {/* Dropdown for sorting options using a more structured dropdown menu approach */}
-      <DropdownMenu>
-        <DropdownMenuTrigger id="dropdown-basic">Sort by: {sortOption}</DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>Sorting Options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => handleSelect("Our top picks")}>Our top picks</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleSelect("Price (lowest first)")}>Price (lowest first)</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleSelect("Best reviewed and lowest price")}>Best reviewed and lowest price</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleSelect("Property rating (high to low)")}>Property rating (high to low)</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-
-      <div div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
-        
-        {gyms.length > 0 ? gyms.map(gym => (
-          <Card key={gym._id} style={{ width: '18rem' }}>
-            <CardHeader>
-              <CardTitle>{gym.name}</CardTitle>
-              <CardDescription>
-                Ratings: {gym.ratings?.totalRatings || 'No'} stars ({gym.ratings?.count || 'no'} reviews)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Image 
-                src ={gym.images && gym.images[0]} alt={`${gym.name} image`}
-                width={800}
-                height={700} 
-              />
-              <p>{gym.about}</p>
-            </CardContent>
-            <CardFooter>
-              <p>Price: ${gym.price}</p>
-            </CardFooter>
-          </Card>
-        )) : <p>No gyms found</p>}
+    <div className="flex flex-col h-full">
+      <main className="flex-1" />
+      <div className="bg-background border-t">
+        <div className="container px-4 md:px-6 py-4 flex justify-between">
+          <Tabs defaultValue="gyms" className="w-full">
+            <TabsList className="flex border-b">
+              <TabsTrigger
+                value="gyms"
+                className="flex-1 text-center py-2"
+              >
+                Gyms
+              </TabsTrigger>
+              <TabsTrigger
+                value="offers"
+                className="flex-1 text-center py-2"
+              >
+                Promotions
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="gyms">
+              <SearchGyms />
+            </TabsContent>
+            <TabsContent value="offers">
+            <Advertisement />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
-
-  </div>
   );
-};
-
-export default SearchGyms;
+}

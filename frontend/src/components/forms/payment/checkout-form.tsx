@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { PaymentService } from "@/services/payment-service";
+import {
+  CreateBookingRequest,
+  PaymentService,
+} from "@/services/payment-service";
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -19,6 +22,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { CreditCardIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const givePaymentErrorToast = () => {
@@ -37,12 +41,29 @@ const givePaymentSuccessToast = () => {
   });
 };
 
-export const CheckoutForm: React.FC = () => {
+type CheckoutFormProps = {
+  userId: string;
+  gymId: string;
+  startDate: Date;
+  endDate: Date;
+  charges: number;
+};
+
+export const CheckoutForm: React.FC<CheckoutFormProps> = ({
+  userId,
+  gymId,
+  startDate,
+  endDate,
+  charges,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState<boolean>(false);
+  const router = useRouter();
 
   const paymentService = new PaymentService();
+
+  const handleCreateBooking = async () => {};
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -51,8 +72,7 @@ export const CheckoutForm: React.FC = () => {
     setProcessing(true);
 
     try {
-      const clientSecret =
-        await paymentService.createPaymentIntent("booking_123");
+      const clientSecret = await paymentService.createPaymentIntent(charges);
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: elements.getElement(CardNumberElement)!,
@@ -61,10 +81,25 @@ export const CheckoutForm: React.FC = () => {
 
       if (result.error) {
         givePaymentErrorToast();
-      } else {
-        givePaymentSuccessToast();
-        console.log("Payment succeeded:", result.paymentIntent);
       }
+      givePaymentSuccessToast();
+      console.log({
+        userId: userId,
+        gymId: gymId,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        charges: charges,
+      });
+
+      const newBooking: CreateBookingRequest = {
+        userId: userId,
+        gymId: gymId,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+        charges: charges,
+      };
+      paymentService.createBooking(newBooking);
+      router.push("/");
     } catch (error) {
       console.error(error);
       givePaymentErrorToast();
@@ -83,7 +118,7 @@ export const CheckoutForm: React.FC = () => {
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 text-foreground">
+        <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="card-number">Card Number</Label>
             <CardNumberElement />

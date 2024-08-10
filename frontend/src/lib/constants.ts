@@ -6,15 +6,23 @@ export type LinkType = {
 export const INITIAL_LINKS: Array<LinkType> = [
   {
     name: "Explore",
-    ref: "gym_search",
+    ref: "/gym_search",
   },
 ];
 
-export const FOOTER_LINKS: Array<LinkType> = [
+export const GYMOWNER_LINKS: Array<LinkType> = [
   {
-    name: "About us",
-    ref: "#",
+    name: "Add Gym",
+    ref: "/creategym",
   },
+];
+
+
+export const FOOTER_LINKS: Array<LinkType> = [
+  // {
+  //   name: "About us",
+  //   ref: "#",
+  // },
   {
     name: "Contact us",
     ref: "/contact",
@@ -23,10 +31,10 @@ export const FOOTER_LINKS: Array<LinkType> = [
     name: "FAQ",
     ref: "/faq",
   },
-  {
-    name: "Terms of Service",
-    ref: "#",
-  },
+  // {
+  //   name: "Terms of Service",
+  //   ref: "#",
+  // },
 ];
 
 type FAQType = {
