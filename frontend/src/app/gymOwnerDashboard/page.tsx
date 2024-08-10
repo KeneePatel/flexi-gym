@@ -218,9 +218,9 @@ const Dashboard = () => {
                     <h3 className="text-xl font-bold">{gym.name}</h3>
                     <div className="flex items-center gap-1 text-sm font-medium text-primary">
                       <StarIcon className="w-4 h-4 fill-primary" />
-                      {(gym.ratings.totalRatings / gym.ratings.count).toFixed(
+                      {gym.ratings.count > 0 ? (gym.ratings.totalRatings / gym.ratings.count).toFixed(
                         1
-                      )}
+                      ) : 0}
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">
