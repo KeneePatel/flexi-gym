@@ -6,10 +6,10 @@ import Logo from "../logo/logo";
 import { ProfileDropdown } from "../profile-dropdown/profile-dropdown";
 import { ThemeToggler } from "../theme-toggler";
 import { AuthContext } from "../../../Auth/AuthContext";
-import {getProfileData} from '../../../Auth/AuthService'
-import React, {useContext, useEffect, useState} from "react";
+import { getProfileData } from '../../../Auth/AuthService'
+import React, { useContext, useEffect, useState } from "react";
 import MobileNav from "./mobile-nav";
-import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 interface LoggedInUser {
   firstName?: string;
@@ -23,9 +23,7 @@ interface LoggedInUser {
 export default function NavBar() {
   const context = useContext(AuthContext);
   const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
-
-
-
+  const router = useRouter();
   useEffect(() => {
     const loadProfileData = async () => {
       try {
@@ -42,7 +40,17 @@ export default function NavBar() {
     };
 
     loadProfileData();
-  }, []);
+  }, [context]);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+
+    if (loggedInUser?.type === 'user') {
+      router.push('/gym_search');
+    } else {
+      router.push('/gymOwnerDashboard'); // Change this to the desired route for non-"user" users
+    }
+  };
 
 
   // @ts-ignore
@@ -50,55 +58,55 @@ export default function NavBar() {
   return (
     <header className="flex items-center justify-between h-16 px-4 md:px-6 border-b">
       <div className="flex items-center gap-2">
-        <Link href="/" prefetch={false}>
+        <a onClick={handleClick}>
           <Logo />
-        </Link>
+        </a>
       </div>
       {isAuthenticated ? (
         <div className="flex items-center gap-8">
-            {loggedInUser?.type == 'user' && (
-                <nav className="hidden md:flex items-center text-sm font-medium">
+          {loggedInUser?.type == 'user' && (
+            <nav className="hidden md:flex items-center text-sm font-medium">
 
-                    {INITIAL_LINKS.map((link, index) => {
-                        return (
-                            <Link key={index} href={link.ref} prefetch={false}>
-                                <Button variant="link" className="px-2">
-                                    {link.name}
-                                </Button>
-                            </Link>
-                        );
-                    })}
-                </nav>
-            )}
-            {loggedInUser?.type == 'gym' && (
-                <nav className="hidden md:flex items-center text-sm font-medium">
+              {INITIAL_LINKS.map((link, index) => {
+                return (
+                  <Link key={index} href={link.ref} prefetch={false}>
+                    <Button variant="link" className="px-2">
+                      {link.name}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
+          {loggedInUser?.type == 'gym' && (
+            <nav className="hidden md:flex items-center text-sm font-medium">
 
-                    {GYMOWNER_LINKS.map((link, index) => {
-                        return (
-                            <Link key={index} href={link.ref} prefetch={false}>
-                                <Button variant="link" className="px-2">
-                                    {link.name}
-                                </Button>
-                            </Link>
-                        );
-                    })}
-                </nav>
-            )}
+              {GYMOWNER_LINKS.map((link, index) => {
+                return (
+                  <Link key={index} href={link.ref} prefetch={false}>
+                    <Button variant="link" className="px-2">
+                      {link.name}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
 
-            <div className="hidden gap-2 md:flex">
-                <ProfileDropdown user={loggedInUser?.type}/>
-                <ThemeToggler/>
-            </div>
-            <div className="flex gap-2 md:hidden">
-                <MobileNav/>
-                <ThemeToggler/>
-            </div>
+          <div className="hidden gap-2 md:flex">
+            <ProfileDropdown user={loggedInUser?.type} />
+            <ThemeToggler />
+          </div>
+          <div className="flex gap-2 md:hidden">
+            <MobileNav />
+            <ThemeToggler />
+          </div>
         </div>
       ) : (
-          <Link href="/login" prefetch={false}>
-              <Button variant="link" className="px-2">
-                  Join Now
-              </Button>
+        <Link href="/login" prefetch={false}>
+          <Button variant="link" className="px-2">
+            Join Now
+          </Button>
         </Link>
       )}
     </header>

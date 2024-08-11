@@ -1,4 +1,4 @@
-import { Collection, Db, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { connectDB, getDB } from "../config/database";
 
 interface Booking {
@@ -8,6 +8,7 @@ interface Booking {
   startDate: string;
   endDate: string;
   charges: number;
+  status: "succeeded" | "cancelled";
 }
 
 export interface CreateBookingRequest {
@@ -16,6 +17,7 @@ export interface CreateBookingRequest {
   startDate: string;
   endDate: string;
   charges: number;
+  status: "succeeded" | "cancelled";
 }
 
 export class BookingRepository {
@@ -32,6 +34,7 @@ export class BookingRepository {
         startDate: bookingReq.startDate,
         endDate: bookingReq.endDate,
         charges: bookingReq.charges,
+        status: "succeeded",
       };
       await bookingsCollection.insertOne(newBooking);
       return true;

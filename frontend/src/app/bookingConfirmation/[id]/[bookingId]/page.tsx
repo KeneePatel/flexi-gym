@@ -204,7 +204,7 @@ export default function Component() {
     const { images, name, tagline, about, amenities, hours, price, location, ratings } = gymDetails;
     const totalRatings = parseInt(ratings.totalRatings);
     const ratingCount = parseInt(ratings.count);
-    const averageRating = (totalRatings / ratingCount).toFixed(1);
+    const averageRating = ratingCount > 0 ? (totalRatings / ratingCount).toFixed(1) : 0;
 
     return (
         <ProtectedRoute>

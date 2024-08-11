@@ -118,7 +118,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 text-foreground">
+        <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="card-number">Card Number</Label>
             <CardNumberElement />
