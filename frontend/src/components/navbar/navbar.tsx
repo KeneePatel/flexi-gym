@@ -27,7 +27,9 @@ export default function NavBar() {
   useEffect(() => {
     const loadProfileData = async () => {
       try {
-        const userProfile = await getProfileData();
+        const token = localStorage.getItem('accessToken');
+        // @ts-ignore
+        const userProfile = jwtDecode(token);
         if (userProfile) {
           // @ts-ignore
           setLoggedInUser(userProfile);
